@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/base_top_red_bg" >
+
+        <EditText
+            android:id="@+id/ticketlist_searchEt"
+            android:layout_width="fill_parent"
+            android:layout_height="30dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dip"
+            android:layout_toLeftOf="@+id/ticketlist_addticketBtn"
+            android:background="@anim/shape_search_editext_bg"
+            android:gravity="left|center_vertical"
+            android:hint="请输入优惠券编号"
+            android:paddingLeft="12dip"
+            android:paddingRight="12dip"
+            android:singleLine="true"
+            android:textSize="14sp" />
+	    
+	    <TextView 
+	        android:id="@+id/ticketlist_addticketBtn"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="20dip"
+	        android:layout_alignParentRight="true"
+	        android:layout_marginRight="15dip"
+	        android:layout_centerVertical="true"
+	        android:background="@anim/add_ticket_btn"
+	        android:clickable="true"
+	        android:gravity="center"
+	        android:paddingLeft="5dip"
+	        android:paddingRight="5dip"
+	        android:textSize="14sp"
+	        android:textColor="@anim/font_white_black"
+	        android:text="@string/ticketlist_addticketBtn"/>
+	</RelativeLayout>
+	
+	<LinearLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal">
+	    
+	    <TextView 
+	        android:id="@+id/ticketlist_unusedBtn"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:background="@drawable/partion_btn_normal"
+	        android:gravity="center"
+	        android:textColor="#FFFFFF"
+	        android:textSize="14sp"
+	        android:text="@string/ticketlist_unusedBtn"
+	        />
+	    
+	    <TextView 
+	        android:id="@+id/ticketlist_usedBtn"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:background="@drawable/partion_btn_toching"
+	        android:gravity="center"
+	        android:textColor="#000000"
+	        android:textSize="14sp"
+	        android:text="@string/ticketlist_usedBtn"
+	        />
+	</LinearLayout>
+	
+	<RelativeLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
+	    
+		<ListView 
+		    android:id="@+id/ticketlist_listview"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_above="@+id/ticketlist_bottomLayout"
+		    android:cacheColorHint="#00000000"
+		    android:listSelector="#00000000"
+		    android:divider="#000000"
+		    android:dividerHeight="1dip"/>
+		
+	
+		<TextView 
+		    android:id="@+id/ticketlist_textview"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerInParent="true"
+		    android:text="@string/ticketlist_textview"
+		    android:textColor="#000000"
+		    android:textSize="14sp"
+		    android:visibility="gone"/>
+		
+		 <LinearLayout 
+	        android:id="@+id/ticketlist_bottomLayout"
+	        android:layout_width="fill_parent"
+	        android:layout_height="50dip"
+	        android:layout_alignParentBottom="true"
+	        android:paddingLeft="15dip"
+	        android:paddingRight="15dip"
+	        android:gravity="center_vertical"
+	      	android:orientation="horizontal"
+	      	android:background="#BBBBBB"
+	      	android:visibility="gone">
+	        
+	        <ProgressBar 
+	            android:id="@+id/ticketlist_progressBar"
+	            style="@android:style/Widget.ProgressBar.Small"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="10dip"/>
+	        
+	        <TextView 
+	            android:id="@+id/ticketlist_loadtext"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:singleLine="true"
+	            android:textSize="14sp"
+	            android:text="请耐心等待，我们正在努力加载数据......"
+	            />
+	        
+	    </LinearLayout>
+		    
+	</RelativeLayout>
+
+</LinearLayout>

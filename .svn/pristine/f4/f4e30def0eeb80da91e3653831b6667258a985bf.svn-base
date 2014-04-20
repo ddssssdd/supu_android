@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="10dip"
+    android:paddingTop="15dip"
+    android:paddingRight="10dip"
+    android:paddingBottom="20dip"
+    android:orientation="vertical" >
+    
+	<ListView 
+	    android:id="@+id/selectpayment_listview"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:paddingLeft="0dip"
+	    android:paddingRight="0dip"
+	    android:paddingTop="0dip"
+	    android:paddingBottom="0dip"
+	    android:background="@anim/shape_ticketinfo_layout_bg"
+	    android:cacheColorHint="#00000000"
+	    android:listSelector="#00000000"
+	    android:divider="#C7C8CA"
+	    android:dividerHeight="0.1dip"/>
+	
+	<TextView 
+	    android:id="@+id/selectpayment_textview"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="10dip"
+	    android:layout_marginLeft="20dip"
+	    android:textColor="@color/red"
+	    android:textSize="14sp"
+	    android:text="温馨提示：订单生成后不能修改支付方式"/>
+</LinearLayout>

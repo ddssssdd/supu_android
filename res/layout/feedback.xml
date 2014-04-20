@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="    精彩源于体验，改善源于分享。我们还年轻，期待倾听您的声音。"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/feedback_edit"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@anim/shape_rounded_rectangle"
+                android:gravity="top"
+                android:hint="请填写您的意见"
+                android:lines="6"
+                android:maxLength="80"
+                android:padding="3dp"
+                android:textSize="12.5sp" />
+
+            <TextView
+                android:id="@+id/feedback_cmm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:background="@anim/cmm"
+                android:gravity="center"
+                android:text="提交"
+                android:textColor="@anim/font_white_black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/feedback_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="50dip"
+                android:background="@anim/aboutus_call_bg" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

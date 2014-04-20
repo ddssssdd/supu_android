@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@anim/noshapge_item_bg"
+    android:orientation="horizontal" >
+          <ImageView
+            android:id="@+id/greedInfoImage"
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:layout_alignParentLeft="true"
+            android:padding="2dp"
+            android:layout_marginRight="10dip"
+            android:layout_marginLeft="10dp"
+            android:scaleType="fitCenter" />
+        
+           <ProgressBar
+            android:id="@+id/greedInfo_progressbar"
+            style="@android:style/Widget.ProgressBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+             android:layout_marginLeft="30dp"
+             android:layout_marginTop="30dip"
+            />
+			<TextView
+			    android:id="@+id/greedinfoName"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:text="商品名字"
+			    android:singleLine="true"
+			    android:textColor="#000000"
+			    android:textSize="14dip"
+			    android:layout_toRightOf="@+id/greedInfoImage"
+			    android:layout_marginTop="5dip"
+			    android:paddingRight="40dip"
+			    />
+			<TextView
+			    android:id="@+id/greedinfoContent"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:text="商品描述"
+			    android:textColor="#808080"
+			    android:textSize="12dip"
+			    android:singleLine="true"
+			    android:layout_toRightOf="@+id/greedInfoImage"
+			    android:layout_marginTop="25dip"
+			    android:paddingRight="40dip"
+			    />
+			<TextView
+			    android:id="@+id/greedShop"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:text="285"
+			    android:textColor="#ff0000"
+			    android:textSize="14dip"
+			    android:layout_alignParentRight="true"
+			    android:paddingRight="40dip"
+			    android:layout_marginTop="40dip"
+			    />
+           <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="20dip"
+            android:src="@drawable/usercenter_arrow" />
+           
+</RelativeLayout>

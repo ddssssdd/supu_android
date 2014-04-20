@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/layout_bg_single"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+     >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="10dip"
+        >
+
+        <TextView
+            android:id="@+id/Addresseeshow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="收件人："
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/Addressee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/Addresseeshow"
+            android:singleLine="true"
+            android:text="小王"
+            android:paddingRight="80dip"
+            android:textColor="#000000" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dip" >
+
+        <TextView
+            android:id="@+id/callShow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="手机："
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/callShow"
+            android:singleLine="true"
+            android:text="1234567890"
+            android:paddingRight="20dip"
+            android:textColor="#000000" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dip" >
+
+        <TextView
+            android:id="@+id/addressshow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="地址："
+            android:textColor="#000000"
+            />
+
+        <TextView
+            android:id="@+id/Address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/addressshow"
+            android:singleLine="true"
+            android:paddingRight="20dip"
+            android:text="上海市"
+            android:textColor="#000000"
+             />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dip" 
+        android:paddingBottom="10dip"
+        >
+
+        <TextView
+            android:id="@+id/zipcodeshow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="邮编："
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/zipCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/zipcodeshow"
+            android:singleLine="true"
+            android:text="118800"
+            android:textColor="#000000" />
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/AdressDefault"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="为默认地址"
+        android:textColor="#ff0000"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="10dip"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/usercenter_arrow" />
+
+</RelativeLayout>

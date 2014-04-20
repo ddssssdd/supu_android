@@ -1,0 +1,506 @@
+package cc.android.supu.tools;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+
+import cc.android.supu.handler.UpdateHandler;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.StatFs;
+import android.text.Html;
+import android.view.KeyEvent;
+
+public class Update {
+	/** 存储空间不足 */
+	private static final int SHORTAGE = 621;
+	/** 下载完成 */
+	private static final int SUCCESS = 620;
+	/** 错误 */
+	private static final int ERROE = 622;
+	/** 中断 */
+	private static final int INTERRUPT = 623;
+	/** 超时 */
+	private static final int TIMEOUT = 624;
+
+	private static final double VISERSION_NO = 1.0d;
+
+	private Activity context;
+	/** 升级信息解析器 */
+	private UpdateHandler jsonData;
+	/** 下载apk的 url */
+	private String downloadUrl;
+	/** 版本号 */
+	private double versionNo;
+	/** 　版本信息 */
+	private String versionInfo;
+	/** 是否强制升级 */
+	private boolean forceUpdate;
+	/** 是否正在升级 */
+	private boolean isUpdating;
+
+	private ProgressDialog pDialog;
+
+	private String fileName;
+	/** sd卡存储路径 */
+	private String sdPath = "";
+	/** 手机内存储路径 */
+	private String cachePath = "";
+
+	private int mark;
+
+	private Handler mHandler;
+
+	public Update(Activity context, UpdateHandler jsonData, Handler handler) {
+		this.context = context;
+		this.jsonData = jsonData;
+		mHandler = handler;
+		// downloadUrl = jsonData.downloadUrl;
+		System.out.println("loadUrl:" + jsonData.downloadUrl);
+		downloadUrl = "http://www.supuy.com/PhoneUpdate.aspx?n=supu.apk";
+		versionNo = jsonData.versionNo;
+		versionInfo = jsonData.versionInfo;
+		forceUpdate = jsonData.forceUpdate;
+		sdPath = Environment.getExternalStorageDirectory().toString() + "/";
+		cachePath = context.getCacheDir().getAbsoluteFile() + "/";
+		System.out.println("cachePath=" + cachePath);
+		fileName = "supu_" + versionNo + ".apk";
+		updateSupu();
+	}
+
+	/**
+	 * 升级
+	 */
+	public void updateSupu() {
+		if (hasUpdate()) {
+			showloadedDialog(jsonData.result_message);
+		}
+	}
+
+	/**
+	 * 获得存储路径 size 文件大小
+	 */
+	private String getPath(long size) {
+		if (IsCanUseSdCard() && Tools.getSDSize() >= size * 2 + 100000) {
+			mark = 0;
+			return sdPath;
+		} else if (getAvailableInternalMemorySize() >= size * 2 + 100000) {
+			mark = 1;
+			return cachePath;
+		}
+		return null;
+	}
+
+	/**
+	 * 是否可以升级
+	 * 
+	 * @return
+	 */
+	private boolean hasUpdate() {
+		if (jsonData.result_code == 1 && !"".equals(downloadUrl)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 带进度条的下载对话框
+	 */
+	private void showLoadingDialog(String msg) {
+		msg = "正在下载，请耐心等待...";
+		pDialog = new ProgressDialog(context);
+		pDialog.setTitle("下载提示");
+		pDialog.setMessage(Html.fromHtml(msg));
+		pDialog.setCanceledOnTouchOutside(false);
+		// pDialog.setCancelable(false);
+		if (!forceUpdate) {// 强制升级不显示取消按钮
+			pDialog.setButton("取消", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					isUpdating = false;
+					dialog.dismiss();
+				}
+			});
+		}
+		pDialog.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_BACK) {
+					if (forceUpdate) {
+						pDialog.dismiss();
+						context.finish();
+					} else {
+						jsonData.result_code = 0;
+						mHandler.sendEmptyMessage(5);
+						pDialog.dismiss();
+					}
+				}
+				return false;
+			}
+		});
+		pDialog.show();
+	}
+
+	/**
+	 * 取消下载对话框
+	 */
+	private void cancelPDialog() {
+		if (pDialog != null) {
+			pDialog.dismiss();
+		}
+		isUpdating = false;
+	}
+
+	private Handler handler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case SHORTAGE:
+				cancelPDialog();
+				showDialog("存储空间不足！");
+				break;
+
+			case SUCCESS:
+				cancelPDialog();
+				context.finish();
+				installStart();
+				break;
+			case INTERRUPT:
+				cancelPDialog();
+				if (forceUpdate) {// 强制升级
+					context.finish();
+				} else {
+					jsonData.result_code = 0;
+					mHandler.sendEmptyMessage(5);
+				}
+				break;
+			case TIMEOUT:
+				showDialog("网络请求超时！");
+				break;
+			}
+		};
+	};
+
+	public void loadThread() {
+
+		if (isUpdating) {// 是否正在升级,正在升级则不能更新
+			// Toast.makeText(context, "系统正在更新！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		isUpdating = true;
+
+		if (null == pDialog) {
+			showLoadingDialog(versionInfo);
+		} else if (!pDialog.isShowing()) {
+			pDialog.show();
+			pDialog.setProgress(0);
+		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				InputStream is = null;
+				FileOutputStream fos = null;
+				try {
+					URL url = new URL(downloadUrl);
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setConnectTimeout(5000);
+					conn.setReadTimeout(5000);
+					long fileSize = conn.getContentLength();
+					String path = getPath(fileSize);
+					if (path != null) {
+						is = conn.getInputStream();
+						changeLimits(path);// 修改读写权限
+						fos = creatFile(path, fileName);
+						if (fos != null) {
+							byte[] buf = new byte[1024];
+							int len = 0;
+							// while (en.hasMoreElements()) {
+							// type type = (type) en.nextElement();
+							//
+							// }
+							while ((len = is.read(buf)) != -1) {
+								fos.write(buf, 0, len);
+							}
+							fos.flush();
+
+							// do {
+							// numRead = is.read(buf);
+							// //
+							// System.out.println("------numRead="+numRead+"------");
+							// // if (numRead == -1) {
+							// // break;
+							// // }
+							// fos.write(buf);
+							// } while (numRead == -1);
+							// fos.flush();
+							if (is != null) {
+								is.close();
+							}
+							if (fos != null) {
+								fos.close();
+							}
+							if (!isUpdating) {
+								handler.sendEmptyMessage(INTERRUPT);
+							} else {
+								handler.sendEmptyMessage(SUCCESS);
+							}
+						} else {
+							handler.sendEmptyMessage(ERROE);
+						}
+					} else {
+						handler.sendEmptyMessage(SHORTAGE);
+					}
+				} catch (SocketTimeoutException e) {
+					e.printStackTrace();
+					handler.sendEmptyMessage(TIMEOUT);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+
+	/**
+	 * 创建文件得到文件输出流
+	 * 
+	 * @param dir
+	 *            目录
+	 * @param fileName
+	 *            文件名
+	 * @return FileOutputStream
+	 * 
+	 */
+	private FileOutputStream creatFile(String dir, String fileName) {
+		// System.err.println("path="+dir+fileName);
+		FileOutputStream fos = null;
+		File file = new File(dir, fileName);
+		// System.out.println("file="+file.getPath());
+		try {
+			file.createNewFile();
+			fos = new FileOutputStream(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fos;
+	}
+
+	/**
+	 * 下载完成对话框,提示是否安装，若强制升级，不掉有此方法
+	 */
+	private void showloadedDialog(String msg) {
+		String ok = "更新";
+		String cancel = "取消";
+		if (forceUpdate) {
+			cancel = "";
+		}
+		Dialog dialogLoaded = new AlertDialog.Builder(context).setTitle("温馨提示").setMessage(msg)
+				.setPositiveButton(ok, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						loadThread();
+						dialog.dismiss();
+					}
+				}).setNegativeButton(cancel, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						jsonData.result_code = 0;
+						mHandler.sendEmptyMessage(5);
+						dialog.dismiss();
+					}
+				}).create();
+		dialogLoaded.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				if (keyCode == KeyEvent.KEYCODE_BACK) {
+					if (forceUpdate) {
+						dialog.dismiss();
+						isUpdating = false;
+						context.finish();
+					} else {
+						jsonData.result_code = 0;
+						mHandler.sendEmptyMessage(5);
+						dialog.dismiss();
+					}
+				}
+				return false;
+			}
+		});
+		dialogLoaded.show();
+	}
+
+	private void showDialog(String msg) {
+		Dialog dialog = new AlertDialog.Builder(context).setTitle("温馨提示").setMessage(msg)
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						context.finish();
+					}
+				}).create();
+		dialog.show();
+	}
+
+	/**
+	 * 启动安装apk
+	 */
+	private void installStart() {
+		File file = null;
+		Intent intent = new Intent();
+//		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setAction(Intent.ACTION_VIEW);
+		if (mark == 0) {
+			file = new File(Environment.getExternalStorageDirectory().toString(), fileName);
+		//	System.out.println("2---file=" + file.getAbsolutePath());
+			intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+			context.startActivity(intent);
+
+		} else if (mark == 1) {
+			file = new File(context.getCacheDir().getAbsoluteFile(), fileName);
+			//System.out.println("1---file=" + file.getAbsolutePath());
+			intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+			context.startActivity(intent);
+		}
+	}
+
+	/**
+	 * 判断是否有sd卡
+	 * 
+	 * @return
+	 */
+	private boolean IsCanUseSdCard() {
+		try {
+			return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * 获取剩余内部存储空间
+	 * 
+	 * @return long
+	 */
+	public static long getAvailableInternalMemorySize() {
+		File path = Environment.getDataDirectory();
+		StatFs stat = new StatFs(path.getPath());
+		long blockSize = stat.getBlockSize();
+		long availableBlocks = stat.getAvailableBlocks();
+		return availableBlocks * blockSize;
+	}
+
+	/**
+	 * 修改读写权限
+	 */
+	private void changeLimits(String path) {
+		if (mark == 0) {
+			String[] args1 = { "chmod", "775", path };
+			exec(args1);
+			String[] args2 = { "chmod", "775", path + fileName };
+			exec(args2);
+		} else {
+			String[] args1 = { "chmod", "775", path };
+			exec(args1);
+			String[] args2 = { "chmod", "775", path + fileName };
+			exec(args2);
+		}
+	}
+
+	/** 执行Linux命令，并返回执行结果。 */
+
+	public static String exec(String[] args) {
+
+		String result = "";
+
+		ProcessBuilder processBuilder = new ProcessBuilder(args);
+
+		Process process = null;
+
+		InputStream errIs = null;
+
+		InputStream inIs = null;
+
+		try {
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			int read = -1;
+
+			process = processBuilder.start();
+
+			errIs = process.getErrorStream();
+
+			while ((read = errIs.read()) != -1) {
+
+				baos.write(read);
+
+			}
+
+			baos.write('\n');
+
+			inIs = process.getInputStream();
+
+			while ((read = inIs.read()) != -1) {
+
+				baos.write(read);
+
+			}
+
+			byte[] data = baos.toByteArray();
+
+			result = new String(data);
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		} finally {
+
+			try {
+				if (errIs != null) {
+					errIs.close();
+				}
+
+				if (inIs != null) {
+					inIs.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			// if (process != null) {
+			// process.destroy();
+			// }
+		}
+		return result;
+	}
+}

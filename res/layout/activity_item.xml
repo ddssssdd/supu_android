@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/activity_item_bg"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/item_icon"
+        android:layout_width="95dp"
+        android:layout_height="95dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/defalut_middle"
+        android:background="@anim/index_goods_bg" />
+
+    <ProgressBar
+        android:id="@+id/item_progress"
+        style="@android:style/Widget.ProgressBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp" 
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/usercenter_arrow" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/arrow"
+        android:layout_toRightOf="@id/item_icon" >
+
+        <TextView
+            android:id="@+id/nameLabel"
+            style="@style/activity_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="#00000000" />
+
+        <TextView
+            android:id="@+id/activityLabel"
+            style="@style/activity_subtitile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameLabel"
+            android:layout_marginTop="-6dp"
+            android:background="#00000000"
+            android:maxLines="2" />
+
+        <TextView
+            android:id="@+id/commentLabel"
+            style="@style/activity_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+
+        <TextView
+            android:id="@+id/noLabel"
+            style="@style/activity_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="-7dp"
+            android:background="#00000000"
+            android:text="( 缺货 )"
+            android:textColor="#666666"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/priceLabel"
+            style="@style/activity_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/noLabel"
+            android:layout_alignParentRight="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:background="#00000000" />
+    </RelativeLayout>
+
+</RelativeLayout>

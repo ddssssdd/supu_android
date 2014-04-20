@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background_ashen" >
+
+    <LinearLayout
+        android:id="@+id/base_body_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/bottom_layout" />
+
+    <RelativeLayout
+        android:id="@id/bottom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/base_bottom_bg" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/base_index_label"
+                style="@style/base_bottom_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/index_gray" />
+
+            <TextView
+                android:id="@+id/base_category_label"
+                style="@style/base_bottom_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/category_gray" />
+
+            <TextView
+                android:id="@+id/base_shopcar_label"
+                style="@style/base_bottom_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/shopcar_gray" />
+
+            <TextView
+                android:id="@+id/base_vip_label"
+                style="@style/base_bottom_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/vip_gray" />
+
+            <TextView
+                android:id="@+id/base_more_label"
+                style="@style/base_bottom_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/more_gray" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

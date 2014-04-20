@@ -1,0 +1,1117 @@
+package cc.android.supu;
+
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import cc.android.supu.bean.ConsigneeBean;
+import cc.android.supu.bean.PaymentBean;
+import cc.android.supu.bean.ShippingBean;
+import cc.android.supu.bean.TicketBean;
+import cc.android.supu.handler.DefaultConsigneeHandler;
+import cc.android.supu.handler.GetMemberInfoHandler;
+import cc.android.supu.handler.LoginHandler;
+import cc.android.supu.handler.PaymentShippingHandler;
+import cc.android.supu.handler.ShippingFeeHandler;
+import cc.android.supu.handler.SubmitOrderhandler;
+import cc.android.supu.handler.TicketInfoHandler;
+import cc.android.supu.tools.ConstantUrl;
+import cc.android.supu.tools.PageRequest;
+import cc.android.supu.tools.PriceTools;
+import cc.android.supu.tools.Tools;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextWatcher;
+import android.text.InputFilter.LengthFilter;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+/**
+ * 结算中心
+ * 
+ * @author sheng
+ * 
+ */
+public class SettleAccountActivity extends BaseActivity {
+
+	private static final int STATE_SUCCESS_CONSIGNEE = 11;
+	private static final int STATE_FAILURED_CONSIGNEE = 12;
+	private static final int STATE_SUCCESS_PAYMENTANDSHIPPIN = 21;
+	private static final int STATE_FAILURED_PAYMENTANDSHIPPIN = 22;
+	private static final int STATE_SUCCESS_SHIPPINGFEE = 31;
+	private static final int STATE_FAILURED_SHIPPINGFEE = 32;
+	private static final int STATE_SUCCESS_SUBMITORDER = 41;
+	private static final int STATE_FAILURED_SUBMITORDER = 42;
+	private static final int STATE_SUCCESS_GETMEMBERINFO = 51;
+	private static final int STATE_FAILURED_GETMEMBERINFO = 52;
+	private static final int STATE_SUCCESS_TICKETINFO = 61;
+	private static final int STATE_FAILURED_TICKETINFO = 62;
+	private static final int STATE_ERROE_TICKETINFO = 63;
+	private static final int STATE_ERROE = 33;
+
+	/** 收件信息布局 */
+	private RelativeLayout baseInfo;
+	/** 支付方式布局 */
+	private RelativeLayout payNameLayout;
+	/** 配送方式布局 */
+	private RelativeLayout shippingNameLayout;
+	/** 优惠券布局 */
+	private RelativeLayout ticketsLayout;
+	/** 留言布局 */
+	private RelativeLayout leaveMsgLayout;
+
+	/** 显示收件人 */
+	private TextView consigneeTv;
+	/** 显示电话 */
+	private TextView telTv;
+	/** 显示地址 */
+	private TextView addressTv;
+	/** 邮编 */
+	private TextView zipCodeTv;
+	/** 显示支付方式 */
+	private TextView paymentTv;
+	/** 显示配送方式 */
+	private TextView shippingNameTv;
+	/** 显示共需支付金额 */
+	private TextView payMoneyTv;
+	/** 显示商品小计 */
+	private TextView totalCountTv;
+	/** 显示优惠金额 */
+	private TextView discountTv;
+	/** 显示运费 */
+	private TextView shippingFeeTv;
+	/** 显示现金账户 */
+	private TextView cashAccountTv;
+	/** 现金账户编辑框 */
+	private EditText cashEt;
+	/** 显示优惠券名 */
+	private TextView ticketEt;
+	/** 显示留言内容 */
+	private TextView leaveMsgTv;
+	/** 显示支付方式加载进度条 */
+	private ProgressBar paymentPBar;
+	/** 显示配送方式加载进度条 */
+	private ProgressBar shippingPBar;
+
+	private SettleAccountActivity context = this;
+	/** 解析类 */
+	private DefaultConsigneeHandler defaultConsigneeHandler;
+	private PaymentShippingHandler paymentShippingHandler;
+	/** 运费信息解析器 */
+	private ShippingFeeHandler shippingFeeHandler;
+	/** 提交订单信息解析器 */
+	private SubmitOrderhandler submitOrderhandler;
+	/** 获得用户信息解析器 */
+	private GetMemberInfoHandler memberInfoHandler;
+	/** 检查优惠券是否可用的信息解析器 */
+	private TicketInfoHandler ticketInfoHandler;
+	/** 支付方式 列表 */
+	private ArrayList<PaymentBean> paymentList;
+	/** 配送方式列表 */
+	private ArrayList<ShippingBean> shippingList;
+
+	/** 收件信息bean */
+	private ConsigneeBean consigneeBean;
+	/** 支付方式bean */
+	private PaymentBean paymentBean;
+	/** 配送方式bean */
+	private ShippingBean shippingBean;
+	/** 支付方式选中的位置 */
+	private int paymentPosi;
+	/** 配送方式选中的位置 */
+	private int shippingPosi;
+	/** 优惠券名称 */
+	private String ticketName = "";
+	/** 优惠券优惠的金额 */
+	private String ticketDiscount = "";
+	/** 是否改变了收件信息 */
+	private boolean isChangeConsignee;
+	/** 是否改变了支付方式 */
+	private boolean isChangePayment;
+	/** 地址是否正确 */
+	private boolean isCorrect;
+
+	/** 用户账户余额 */
+	private String price;
+	/** 省编号 */
+	private String provId = "";
+	/** 区域编号 */
+	private String areaId = "";
+	/** 配送方式ID */
+	private String shippingID = "";
+	/** 支付方式编号 */
+	private String paymentId = "";
+	/** 联系人 */
+	private String consignee = "";
+	/** 市编号 */
+	private String cityId = "";
+	/** 邮编 */
+	private String zipCode = "";
+	/** 地址 */
+	private String address = "";
+	/** 详细地址信息 */
+	private String addressInfo = "";
+	/** 手机 */
+	private String mobile = "";
+	/** 电话 */
+	private String tel = "";
+	/** Email */
+	private String email = "";
+	/** 现金账户支付金额 */
+	private String allCash;
+	/** 优惠券编号 */
+	private String ticketNo = "";
+	/** 留言 */
+	private String remark = "";
+	/** 运费 */
+	private String shippingFee = "";
+	/** 总金额 */
+	private String sumAmount;
+	/** 优惠金额 */
+	private String discountAmount;
+
+	/** 优惠卷删除按钮 */
+	private ImageView discountImage;
+	private boolean ifDiscount = false;// 是否先把优惠卷，有为True,没有为False;
+
+	@Override
+	protected String setTitle() {
+		// TODO Auto-generated method stub
+		return "结算中心";
+	}
+
+	@Override
+	protected String setBackBtn() {
+		// TODO Auto-generated method stub
+		return "返回";
+	}
+
+	@Override
+	protected String setEnterBtn() {
+		// TODO Auto-generated method stub
+		return "提交订单";
+	}
+
+	@Override
+	protected void enterBtnOnClick() {
+		// TODO Auto-generated method stub
+		if (consigneeBean == null) {
+			Toast.makeText(context, "您的收件信息为空，请先完善收件信息", Toast.LENGTH_SHORT).show();
+			// baseInfo.setBackgroundResource(R.anim.shape_layout_selected);
+			return;
+		}
+
+		String allCashStr = cashEt.getText().toString().trim();
+		if (!"".equals(allCashStr) && !allCashStr.matches("([0-9]{1,})|([0-9]{1,}[.][0-9]{1,2})")) {
+			cashEt.requestFocus();
+			Toast.makeText(context, "现金账户金额输入格式不正确！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		allCash = PriceTools.formatStr(allCashStr);
+		// if(allCash > price){
+		if (PriceTools.compare(allCash, price) == 1) {
+			cashEt.requestFocus();
+			Toast.makeText(context, "您输入的现金账户金额不能大于您账户现有的总额！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		String cashAmount = getPayMoney(sumAmount, shippingFee, ticketDiscount, "");
+		// if(allCash > cashAmount){
+		if (PriceTools.compare(allCash, cashAmount) == 1) {
+			cashEt.requestFocus();
+			Toast.makeText(context, "您输入的现金账户金额不能大于您需要支付的金额！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		if (paymentList == null || paymentList.size() == 0) {
+			Toast.makeText(context, "支付方式为空，请选择支付方式！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		if (shippingList == null || shippingList.size() == 0) {
+			Toast.makeText(context, "配送方式为空，请选择配送方式！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		if (shippingFee == null || shippingFee.equals("")) {
+			Toast.makeText(context, "运费请求失败，请重新选择配送方式或支付方式！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		ticketNo = ticketEt.getText().toString().trim();
+		if ("".equals(ticketNo)) {// 若优惠券编号为空，直接提交订单，否则先验证优惠券可用后再提交订单
+			requestServer(requestSubmitOrder);
+			enterLabel.setBackgroundResource(R.drawable.enter_ontouching);
+			enterLabel.setTextColor(Color.BLACK);
+			enterLabel.setClickable(false);
+		} else {
+			requestServer(requestTicketInfo);
+			enterLabel.setBackgroundResource(R.drawable.enter_ontouching);
+			enterLabel.setClickable(false);
+		}
+		
+		
+	}
+
+	@Override
+	protected void onSubActivityClick(View view) {
+		// TODO Auto-generated method stub
+		Intent intent = null;
+		switch (view.getId()) {
+		// 收件信息
+		case R.id.settleaccount_baseInfo:
+			intent = new Intent(this, AdressListActivity.class);
+			intent.putExtra("TYPE", 5);
+			startActivityForResult(intent, 0);
+			break;
+		// 支付方式
+		case R.id.settleaccount_PayNameLayout:
+			if (paymentList == null || paymentList.size() == 0) {
+				requestServer(requestPaymentShipping, false);
+				return;
+			}
+			intent = new Intent(this, SelectPayMentActivity.class);
+			intent.putParcelableArrayListExtra("paymentList", paymentList);
+			intent.putExtra("paymentPosi", paymentPosi);
+			startActivityForResult(intent, 0);
+			break;
+		// 配送方式
+		case R.id.settleaccount_ShippingNameLayout:
+			if (shippingList == null || shippingList.size() == 0) {
+				requestServer(requestPaymentShipping, false);
+				return;
+			}
+			intent = new Intent(this, SelectShippingActivity.class);
+			intent.putParcelableArrayListExtra("shippingList", shippingList);
+			intent.putExtra("shippingPosi", shippingPosi);
+			startActivityForResult(intent, 0);
+			break;
+		// 优惠券
+		case R.id.settleaccount_ticketsLayout:
+			intent = new Intent(this, TicketListActivity.class);
+			intent.putExtra("shopCart", "shopCart");
+			startActivityForResult(intent, 0);
+			break;
+		// 留言
+		case R.id.settleaccount_leaveMessage:
+			intent = new Intent(this, LeaveMsgActivity.class);
+			intent.putExtra("remark", remark);
+			startActivityForResult(intent, 0);
+			break;
+		case R.id.arrow5:
+			if (ifDiscount) {
+				ifDiscount = false;
+				discountImage.setImageResource(R.drawable.arrow);
+				ticketEt.setText("");
+				ticketDiscount =  "0";
+				payMoneyTv.setText("￥" + getPayMoney(sumAmount, shippingFee, ticketDiscount, allCash + ""));
+				discountTv.setText("￥" + getDiscountAmount(discountAmount, ticketDiscount));
+			}
+			break;
+		}
+	}
+
+	@Override
+	protected void initPage() {
+		// TODO Auto-generated method stub
+
+		baseInfo = (RelativeLayout) findViewById(R.id.settleaccount_baseInfo);
+		baseInfo.setOnClickListener(this);
+		payNameLayout = (RelativeLayout) findViewById(R.id.settleaccount_PayNameLayout);
+		payNameLayout.setOnClickListener(this);
+		payNameLayout.setClickable(false);
+		shippingNameLayout = (RelativeLayout) findViewById(R.id.settleaccount_ShippingNameLayout);
+		shippingNameLayout.setOnClickListener(this);
+		shippingNameLayout.setClickable(false);
+		ticketsLayout = (RelativeLayout) findViewById(R.id.settleaccount_ticketsLayout);
+		ticketsLayout.setOnClickListener(this);
+		leaveMsgLayout = (RelativeLayout) findViewById(R.id.settleaccount_leaveMessage);
+		leaveMsgLayout.setOnClickListener(this);
+
+		consigneeTv = (TextView) findViewById(R.id.settleaccount_Consignee);
+		telTv = (TextView) findViewById(R.id.settleaccount_Tel);
+		addressTv = (TextView) findViewById(R.id.settleaccount_Address);
+		zipCodeTv = (TextView) findViewById(R.id.settleaccount_ZipCode);
+		paymentTv = (TextView) findViewById(R.id.settleaccount_Paymnent);
+		shippingNameTv = (TextView) findViewById(R.id.settleaccount_ShippingName);
+		payMoneyTv = (TextView) findViewById(R.id.settleaccount_PayMoney);
+		totalCountTv = (TextView) findViewById(R.id.settleaccount_totalCount);
+		discountTv = (TextView) findViewById(R.id.settleaccount_Discount);
+		discountImage = (ImageView) findViewById(R.id.arrow5);
+		discountImage.setOnClickListener(this);
+		ifDiscount = false;
+
+		shippingFeeTv = (TextView) findViewById(R.id.settleaccount_ShippingFee);
+		cashAccountTv = (TextView) findViewById(R.id.settleaccount_cashAccount);
+		cashEt = (EditText) findViewById(R.id.settleaccount_cashEt);
+		cashEt.addTextChangedListener(watcher);
+		ticketEt = (TextView) findViewById(R.id.settleaccount_ticketName);
+		leaveMsgTv = (TextView) findViewById(R.id.settleaccount_leavemsg);
+
+		paymentPBar = (ProgressBar) findViewById(R.id.settleaccount_Paymnent_progressBar);
+		shippingPBar = (ProgressBar) findViewById(R.id.settleaccount_ShippingName_progressBar);
+
+		if (getIntent() != null) {
+			sumAmount = getIntent().getStringExtra("sumAmount");
+			discountAmount = getIntent().getStringExtra("discountAmount");
+			discountTv.setText("￥" + getDiscountAmount(discountAmount, ticketDiscount));
+			totalCountTv.setText("￥" + sumAmount);
+		}
+		cashAccountTv.setText("￥0.00");
+
+		requestServer(requestDefaultConsignee);
+	}
+
+	@Override
+	int setLayout() {
+		// TODO Auto-generated method stub
+		return R.layout.settleaccount;
+	}
+
+	@Override
+	int setBottomIndex() {
+		// TODO Auto-generated method stub
+		return 2;
+	}
+
+	/**
+	 * 获得默认收货地址
+	 */
+	PageRequest requestDefaultConsignee = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			// TODO Auto-generated method stub
+			defaultConsigneeHandler = new DefaultConsigneeHandler();
+			Tools.requestToParse(context, ConstantUrl.GETDEFAULTCONSIGNEE, "GetDefaultConsignee", null,
+					defaultConsigneeHandler, false);
+			if (Tools.responseValue == 1) {
+				if (defaultConsigneeHandler.result_code == 0) {
+					handler.sendEmptyMessage(STATE_SUCCESS_CONSIGNEE);
+				} else {
+					handler.sendEmptyMessage(STATE_FAILURED_CONSIGNEE);
+				}
+			} else {
+				handler.sendEmptyMessage(STATE_ERROR);
+			}
+		}
+	};
+
+	/**
+	 * 支付方式及送货方式请求
+	 */
+	PageRequest requestPaymentShipping = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			// TODO Auto-generated method stub
+			TreeMap<String, String> params = new TreeMap<String, String>();
+			params.put("AreaId", areaId);
+			params.put("PaymentId", paymentId);
+
+			paymentShippingHandler = new PaymentShippingHandler();
+			Tools.requestToParse(context, ConstantUrl.GETPAYMENTSHIPPING, "GetPaymentShipping", params,
+					paymentShippingHandler, false);
+			if (Tools.responseValue == 1) {
+				if (paymentShippingHandler.result_code == 0) {
+					handler.sendEmptyMessage(STATE_SUCCESS_PAYMENTANDSHIPPIN);
+				} else {
+					handler.sendEmptyMessage(STATE_FAILURED_PAYMENTANDSHIPPIN);
+				}
+			} else {
+				handler.sendEmptyMessage(STATE_ERROR);
+			}
+		}
+	};
+
+	/**
+	 * 获得运费请求
+	 */
+	PageRequest requestShippingFee = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			// TODO Auto-generated method stub
+			TreeMap<String, String> params = new TreeMap<String, String>();
+			params.put("ProvId", provId);
+			params.put("AreaId", areaId);
+			params.put("ShippingID", shippingID);
+
+			shippingFeeHandler = new ShippingFeeHandler();
+			Tools.requestToParse(context, ConstantUrl.GETSHIPPINGFEE, "GetShippingFee", params, shippingFeeHandler,
+					false);
+			System.out.println("requestShippingFee.........................");
+			if (Tools.responseValue == 1) {
+				System.out.println("responseValue == 1.........................");
+				if (shippingFeeHandler.result_code == 0) {
+					System.out.println("shippingFeeHandler.result_code==0............");
+					handler.sendEmptyMessage(STATE_SUCCESS_SHIPPINGFEE);
+				} else {
+					handler.sendEmptyMessage(STATE_FAILURED_SHIPPINGFEE);
+				}
+			} else {
+				handler.sendEmptyMessage(STATE_ERROR);
+			}
+		}
+	};
+
+	/**
+	 * 提交订单请求
+	 */
+	private PageRequest requestSubmitOrder = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			// TODO Auto-generated method stub
+			allCash = cashAccountTv.getText().toString().trim().substring(1);
+			TreeMap<String, String> params = new TreeMap<String, String>();
+			params.put("Consignee", consignee);
+			params.put("ProvinceId", provId);
+			params.put("CityId", cityId);
+			params.put("AreaId", areaId);
+			params.put("ZipCode", zipCode);
+			params.put("Address", addressInfo);// 原参数为address,但因address与addressInfo的值被调换了，故用addressInfo；
+			params.put("Mobile", mobile);
+			params.put("Tel", tel);
+			params.put("Email", email);
+			params.put("ShippingId", shippingID);
+			params.put("PaymentId", paymentId);
+			params.put("AllCash", allCash + "");
+			params.put("TicketNo", ticketNo);
+			params.put("Remark", remark);
+
+			submitOrderhandler = new SubmitOrderhandler();
+			Tools.requestToParse(SettleAccountActivity.this, ConstantUrl.SUBMITORDER, "SubmitOrder", params,
+					submitOrderhandler, false);
+			if (Tools.responseValue == 1) {
+				if (submitOrderhandler.result_code == 0) {
+					handler.sendEmptyMessage(STATE_SUCCESS_SUBMITORDER);
+				} else {
+					handler.sendEmptyMessage(STATE_FAILURED_SUBMITORDER);
+				}
+			} else {
+				handler.sendEmptyMessage(STATE_ERROE_TICKETINFO);
+			}
+		}
+	};
+
+	/**
+	 * 请求用户信息
+	 */
+	private PageRequest requestMemberInfo = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			// TODO Auto-generated method stub
+			memberInfoHandler = new GetMemberInfoHandler();
+			Tools.requestToParse(context, ConstantUrl.GETMEMBERINFO, "GetMemberInfo", null, memberInfoHandler, false);
+			if (Tools.responseValue == 1) {
+				if (memberInfoHandler.result_code == 0) {
+					handler.sendEmptyMessage(STATE_SUCCESS_GETMEMBERINFO);
+				} else {
+					handler.sendEmptyMessage(STATE_FAILURED_GETMEMBERINFO);
+				}
+			} else {
+				handler.sendEmptyMessage(STATE_ERROR);
+			}
+		}
+	};
+
+	/**
+	 * 请求优惠券信息,查看优惠券是否可用
+	 */
+	private PageRequest requestTicketInfo = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			// TODO Auto-generated method stub
+			TreeMap<String, String> params = new TreeMap<String, String>();
+			params.put("TicketNo", ticketNo);
+
+			ticketInfoHandler = new TicketInfoHandler();
+			Tools.requestToParse(SettleAccountActivity.this, ConstantUrl.GETTICKETINFO, "GetTicketInfo", params,
+					ticketInfoHandler, false);
+			if (Tools.responseValue == 1) {
+				if (ticketInfoHandler.result_code == 0) {
+					handler.sendMessage(handler.obtainMessage(STATE_SUCCESS_TICKETINFO));
+				} else {
+					handler.sendMessage(handler.obtainMessage(STATE_FAILURED_TICKETINFO));
+				}
+			} else {
+				handler.sendMessage(handler.obtainMessage(STATE_ERROE_TICKETINFO));
+			}
+		}
+	};
+
+	protected void dealwithMessage(android.os.Message msg) {
+		switch (msg.what) {
+		case STATE_SUCCESS_CONSIGNEE:
+
+			consigneeBean = defaultConsigneeHandler.consigneeBean;
+			if (consigneeBean != null) {
+				payNameLayout.setClickable(true);
+				shippingNameLayout.setClickable(true);
+			}
+			voluateConsingnee(consigneeBean);
+			if (paymentShippingHandler == null) {
+				setLoadingView(0);// 支付方式和配送方式都显示加载
+				requestServer(requestPaymentShipping, false);
+			}
+			break;
+
+		case STATE_FAILURED_CONSIGNEE:
+			Toast.makeText(context, "服务器异常！", Toast.LENGTH_SHORT).show();
+			break;
+
+		case STATE_SUCCESS_PAYMENTANDSHIPPIN:
+			paymentList = paymentShippingHandler.paymentList;
+			if (isChangeConsignee || !isChangePayment) {// 进入页面第一次请求
+				if (paymentList != null && paymentList.size() > 0) {
+					setLoadingView(3);// 隐藏支付方式加载进度条
+					setPayment(paymentList.get(0));
+					paymentId = paymentList.get(0).paymentID;
+				}
+				isChangeConsignee = false;
+				isChangePayment = false;
+			}
+
+			shippingList = paymentShippingHandler.shippingList;
+			if (shippingList != null && shippingList.size() > 0) {
+				setLoadingView(4);// 隐藏配送方式加载进度条
+				setShippin(shippingList.get(0));
+				shippingPosi = 0;// 初始配送方式
+				shippingID = shippingList.get(0).shippingID;
+			}
+			requestServer(requestShippingFee, false);
+			break;
+
+		case STATE_FAILURED_PAYMENTANDSHIPPIN:
+			int result_code2 = paymentShippingHandler.result_code;
+			if (result_code2 == 1000) {
+				showDialog();
+			} else if (result_code2 == 1) {
+				Toast.makeText(context, "地区编号为空！请先设置收货地址。", Toast.LENGTH_SHORT).show();
+			} else if (result_code2 == 13) {
+				Toast.makeText(context, "县/区编号错误！请正确设置收货地址。", Toast.LENGTH_SHORT).show();
+			} else {
+				// Toast.makeText(context, "服务器异常！", Toast.LENGTH_SHORT).show();
+			}
+			setLoadingView(5);
+			setLoadingView(6);
+			break;
+
+		case STATE_SUCCESS_SHIPPINGFEE:
+			shippingFee = shippingFeeHandler.shippingFee;
+			System.out.println("shippingFee" + shippingFee);
+			shippingFeeTv.setText("￥" + PriceTools.formatStr(shippingFee));
+			// ...................................................................
+			String cashStr = cashEt.getText().toString().trim();
+			if (cashStr.matches("([0-9]{1,})|([0-9]{1,}[.][0-9]{1,2})") || "".equals(cashStr)) {
+				allCash = PriceTools.formatStr(cashStr);
+				String cashAmount = getPayMoney(sumAmount, shippingFee, ticketDiscount, "");
+				String maxAmount = getNowPayMoney(cashAmount, shippingFee);
+				// 现金账户 >输入金额 && 共需支付 > 输入金额
+				if (PriceTools.compare(price, allCash) >= 0 && PriceTools.compare(maxAmount, allCash) >= 0) {
+					cashAccountTv.setText("￥" + allCash);
+					payMoneyTv.setText("￥" + getPayMoney(sumAmount, shippingFee, ticketDiscount, allCash + ""));
+					// String total = getTotalAmount(sumAmount, ticketDiscount,
+					// allCash + "");
+					// if (PriceTools.compare(total, "0") >= 0) {
+					// totalCountTv.setText("￥"
+					// + getTotalAmount(sumAmount, ticketDiscount,
+					// allCash + ""));
+					// } else {
+					// totalCountTv.setText("￥0.00");
+					// }
+					// 现金账户 <输入金额 && 共需支付 > 现金账户
+				} else if (PriceTools.compare(price, allCash) < 0 && PriceTools.compare(maxAmount, price) >= 0) {
+					cashAccountTv.setText("￥" + price);
+					payMoneyTv.setText("￥" + getPayMoney(sumAmount, shippingFee, ticketDiscount, price + ""));
+					// String total = getTotalAmount(sumAmount, ticketDiscount,
+					// price + "");
+					// if (PriceTools.compare(total, "0") >= 0) {
+					// totalCountTv.setText("￥" + total);
+					// } else {
+					// totalCountTv.setText("￥0.00");
+					// }
+					// 现金账户 <输入金额 && 共需支付 < 现金账户
+				} else if (PriceTools.compare(price, allCash) < 0 && PriceTools.compare(maxAmount, price) < 0) {
+					cashAccountTv.setText("￥" + maxAmount);
+					payMoneyTv.setText("￥" + PriceTools.formatStr(shippingFee));
+					// totalCountTv.setText("￥0.00");
+					// 现金账户 >输入金额 && 共需支付 < 输入金额
+				} else if (PriceTools.compare(price, allCash) >= 0 && PriceTools.compare(maxAmount, allCash) < 0) {
+					cashAccountTv.setText("￥" + maxAmount);
+					payMoneyTv.setText("￥" + PriceTools.formatStr(shippingFee));
+					// totalCountTv.setText("￥0.00");
+				}
+			}
+			// payMoneyTv.setText("￥"
+			// + getPayMoney(sumAmount, shippingFee, ticketDiscount,
+			// allCash + ""));
+			break;
+		case STATE_FAILURED_SHIPPINGFEE:
+			int result_code3 = shippingFeeHandler.result_code;
+			if (result_code3 == 1) {
+				Toast.makeText(context, "地址为空！请先设置收货地址。", Toast.LENGTH_SHORT).show();
+			} else if (result_code3 == 2) {
+				Toast.makeText(context, "省为空！请先设置收货地址。", Toast.LENGTH_SHORT).show();
+			} else if (result_code3 == 13) {
+				Toast.makeText(context, "县/区编号错误！请正确设置收货地址。", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(context, "服务器异常！", Toast.LENGTH_SHORT).show();
+			}
+			break;
+
+		case STATE_SUCCESS_SUBMITORDER:
+			Toast.makeText(context, "订单提交成功", Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(this, OrderInfoActivity.class);
+			if (submitOrderhandler.order != null) {
+				intent.putExtra("OrderSN", submitOrderhandler.order.OrderSN);
+			}
+			startActivity(intent);
+			finish();
+			break;
+		case STATE_FAILURED_SUBMITORDER:
+			int result_code = submitOrderhandler.result_code;
+			if (result_code == 1000) {
+				showDialog();
+			} else {
+				Toast.makeText(context, showText(result_code), Toast.LENGTH_SHORT).show();
+			}
+			enterLabel.setBackgroundResource(R.drawable.enter_normal);
+			enterLabel.setClickable(true);
+			break;
+
+		case STATE_SUCCESS_GETMEMBERINFO:
+			if (memberInfoHandler.memberBean != null) {
+				price = PriceTools.formatStr(memberInfoHandler.memberBean.price);
+				cashEt.setHint("余额：" + price + "");
+			}
+			break;
+		case STATE_FAILURED_GETMEMBERINFO:
+			if (memberInfoHandler.result_code == 1) {
+				// 这里需要登录
+				showDialog();
+			} else {
+				Toast.makeText(context, "服务器异常！", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case STATE_SUCCESS_TICKETINFO:
+			if ("可使用此优惠券".equals(ticketInfoHandler.validateResult)) {
+				requestServer(requestSubmitOrder);
+			} else {
+				Toast.makeText(context, "您所使用的优惠券无效！", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case STATE_FAILURED_TICKETINFO:
+			if (null != ticketInfoHandler.result_message) {
+				Toast.makeText(context, ticketInfoHandler.result_message, Toast.LENGTH_SHORT).show();
+				enterLabel.setBackgroundResource(R.drawable.enter_normal);
+				enterLabel.setTextColor(Color.WHITE);
+				enterLabel.setClickable(true);
+			}
+			break;
+		case STATE_ERROE_TICKETINFO:
+			enterLabel.setBackgroundResource(R.drawable.enter_normal);
+			enterLabel.setTextColor(Color.WHITE);
+			enterLabel.setClickable(true);
+			break;
+		case STATE_ERROE:
+			Toast.makeText(context, "请求异常！", Toast.LENGTH_SHORT).show();
+			break;
+		}
+	};
+
+	/**
+	 * 提交订单后Toast显示的text
+	 * 
+	 * @param result_code
+	 * @return
+	 */
+	private String showText(int result_code) {
+		String message = "";
+		switch (result_code) {
+		case 1:
+			message = "订单信息不完整，订单生成失败！";
+			break;
+		case 2:
+			message = "订单中不包含任何商品或含有缺货商品，订单生成失败！";
+			break;
+		case 11:
+			message = "省编号错误！";
+			break;
+		case 12:
+			message = "市编号错误！";
+			break;
+		case 13:
+			message = "县/区编号错误！";
+			break;
+		default:
+			message = "订单提交失败！";
+			break;
+		}
+		return message;
+	}
+
+	/**
+	 * 给收件信息参数赋值,并设置收件信息
+	 * 
+	 * @param consigneeBean
+	 *            收件信息bean
+	 * @param boolean 地址是否错误
+	 * 
+	 */
+	private void voluateConsingnee(ConsigneeBean consigneeBean) {
+		if (consigneeBean != null) {
+			consignee = consigneeBean.Consignee;
+			cityId = consigneeBean.CityID;
+			tel = consigneeBean.Tel;
+			zipCode = consigneeBean.ZipCode;
+			provId = consigneeBean.ProvinceID;
+			areaId = consigneeBean.AreaID;
+			address = consigneeBean.Address;
+			if (address != null) {
+				address = address.trim();
+			}
+			addressInfo = consigneeBean.AddressInfo;
+			if (addressInfo != null) {
+				addressInfo = addressInfo.trim();
+			}
+			mobile = consigneeBean.Mobile;
+			email = consigneeBean.Email;
+
+			consigneeTv.setText(consignee);
+			telTv.setText(mobile == null || "".equals(mobile) ? tel : mobile);
+
+			addressTv.setText(address + addressInfo);
+			zipCodeTv.setText(zipCode);
+		}
+		if ("".equals(cityId) || "".equals(provId) || "".equals(areaId)) {
+			isCorrect = false;
+		} else {
+			isCorrect = true;
+		}
+	}
+
+	/**
+	 * 设置支付方式
+	 */
+	private void setPayment(PaymentBean paymentBean) {
+		if (paymentBean != null) {
+			paymentTv.setText(paymentBean.paymentName);
+		}
+	}
+
+	/**
+	 * 设置配送方式
+	 */
+	private void setShippin(ShippingBean shippingBean) {
+		if (shippingBean != null) {
+			shippingNameTv.setText(shippingBean.shippingName);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		if (data != null) {
+			// 支付方式
+			if (resultCode == 20) {
+				paymentPosi = data.getIntExtra("paymentPosi", paymentPosi);
+				if (paymentList != null && paymentPosi < paymentList.size()) {
+					paymentBean = paymentList.get(paymentPosi);
+					setPayment(paymentBean);
+					paymentId = paymentBean.paymentID;
+					setLoadingView(2);// 2 配送方式显示加载
+					shippingPBar.setVisibility(View.VISIBLE);
+					isChangePayment = true;
+					requestServer(requestPaymentShipping);
+				}
+			} else if (resultCode == 10) {// 配送方式
+				shippingPosi = data.getIntExtra("shippingPosi", shippingPosi);
+				if (shippingList != null && shippingPosi < shippingList.size()) {
+					shippingBean = shippingList.get(shippingPosi);
+					setShippin(shippingBean);
+					shippingID = shippingBean.shippingID;
+					requestServer(requestShippingFee);
+				}
+			} else if (resultCode == 30) {// 留言
+				remark = data.getStringExtra("remark");
+				leaveMsgTv.setText(remark);
+			} else if (resultCode == 40) {// 优惠券
+				TicketBean ticketBean = (TicketBean) data.getSerializableExtra("ticketBean");
+				if (ticketBean != null) {
+					ifDiscount = true;
+					ticketEt.setText(ticketBean.ticketNo);
+					ticketDiscount = ticketBean.discountAmount + "";
+					payMoneyTv.setText("￥" + getPayMoney(sumAmount, shippingFee, ticketDiscount, allCash + ""));
+					discountTv.setText("￥" + getDiscountAmount(discountAmount, ticketDiscount));
+					// totalCountTv.setText("￥"
+					// + getTotalAmount(sumAmount, ticketDiscount, allCash
+					// + ""));
+					discountImage.setImageResource(R.drawable.delete);
+				} else {
+					ifDiscount = false;
+				}
+			} else if (resultCode == 555) {// 地址信息
+				consigneeBean = (ConsigneeBean) data.getSerializableExtra("ConsigneeBean");
+				if (consigneeBean != null) {
+					voluateConsingnee(consigneeBean);
+					// baseInfo.setBackgroundResource(R.anim.shape_ticketinfo_layout_bg);
+					isChangeConsignee = true;
+					setLoadingView(0);
+					paymentId = "";// 初始化支付方式
+					paymentPosi = 0;// 选中的支付方式初始化
+					requestServer(requestPaymentShipping, false);
+					payNameLayout.setClickable(true);
+					shippingNameLayout.setClickable(true);
+				}
+			}
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	/**
+	 * 设置加载view
+	 * 
+	 * @param type
+	 *            0 支付方式和配送方式都显示加载； 1 支付方式显示加载； 2 配送方式显示加载 3 隐藏支付方式加载进度条 4
+	 *            隐藏配送方式加载进度条
+	 */
+	private void setLoadingView(int type) {
+		switch (type) {
+		case 0:
+			paymentPBar.setVisibility(View.VISIBLE);
+			paymentTv.setText("正在加载...");
+			shippingPBar.setVisibility(View.VISIBLE);
+			shippingNameTv.setText("正在加载...");
+			break;
+		case 1:
+			paymentPBar.setVisibility(View.VISIBLE);
+			paymentTv.setText("正在加载...");
+			break;
+		case 2:
+			shippingPBar.setVisibility(View.VISIBLE);
+			shippingNameTv.setText("正在加载...");
+			break;
+		case 3:
+			paymentPBar.setVisibility(View.GONE);
+			break;
+		case 4:
+			shippingPBar.setVisibility(View.GONE);
+			break;
+		case 5:
+			paymentPBar.setVisibility(View.GONE);
+			paymentTv.setText("需要先设置收件地址");
+			break;
+		case 6:
+			shippingPBar.setVisibility(View.GONE);
+			shippingNameTv.setText("需要先设置收件地址");
+			break;
+		}
+
+	}
+
+	/**
+	 * 提示登录对话框
+	 */
+	private void showDialog() {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+		dialog.setTitle("提示对话框").setMessage("您未登录，请先登录！").setPositiveButton("确定", new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				// 跳到登录页面
+				Intent intent = new Intent(context, LoginActivity.class);
+				intent.putExtra("shopcart", "shopcart");
+				startActivity(intent);
+			}
+		}).setNegativeButton("取消", new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
+		dialog.create().show();
+	}
+
+	/**
+	 * 现金账户编辑框监听器
+	 */
+	private TextWatcher watcher = new TextWatcher() {
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			// TODO Auto-generated method stub
+			String cashStr = s.toString().trim();
+			if(cashStr.matches("[0]{2,}|([0]{2,}[.][0-9]{3,})|([0][.][0-9]{3,})")){
+				Toast.makeText(SettleAccountActivity.this, "输入的格式错误", Toast.LENGTH_SHORT).show();
+				return;
+			}
+			
+			try {
+				if (cashStr.matches("([0-9]{1,})|([0-9]{1,}[.][0-9]{1,2})") || "".equals(cashStr)) {
+					allCash = PriceTools.formatStr(cashStr);
+					String cashAmount = getPayMoney(sumAmount, shippingFee, ticketDiscount, "");
+					String maxAmount = getNowPayMoney(cashAmount, shippingFee);
+					// 现金账户 >输入金额 && 共需支付 > 输入金额
+					if (PriceTools.compare(price, allCash) >= 0 && PriceTools.compare(maxAmount, allCash) >= 0) {
+						cashAccountTv.setText("￥" + allCash);
+						payMoneyTv.setText("￥" + getPayMoney(sumAmount, shippingFee, ticketDiscount, allCash + ""));
+						String total = getTotalAmount(sumAmount, ticketDiscount, allCash + "");
+						// if (PriceTools.compare(total, "0") >= 0) {
+						// totalCountTv.setText("￥"
+						// + getTotalAmount(sumAmount, ticketDiscount,
+						// allCash + ""));
+						// } else {
+						// totalCountTv.setText("￥0.00");
+						// }
+						// 现金账户 <输入金额 && 共需支付 > 现金账户
+					} else if (PriceTools.compare(price, allCash) < 0 && PriceTools.compare(maxAmount, price) >= 0) {
+						cashAccountTv.setText("￥" + price);
+						payMoneyTv.setText("￥" + getPayMoney(sumAmount, shippingFee, ticketDiscount, price + ""));
+						// String total = getTotalAmount(sumAmount, ticketDiscount,
+						// price + "");
+						// if (PriceTools.compare(total, "0") >= 0) {
+						// totalCountTv.setText("￥" + total);
+						// } else {
+						// totalCountTv.setText("￥0.00");
+						// }
+						// 现金账户 <输入金额 && 共需支付 < 现金账户
+					} else if (PriceTools.compare(price, allCash) < 0 && PriceTools.compare(maxAmount, price) < 0) {
+						cashAccountTv.setText("￥" + maxAmount);
+						payMoneyTv.setText("￥" + PriceTools.formatStr(shippingFee));
+						// totalCountTv.setText("￥0.00");
+						// 现金账户 >输入金额 && 共需支付 < 输入金额
+					} else if (PriceTools.compare(price, allCash) >= 0 && PriceTools.compare(maxAmount, allCash) < 0) {
+						cashAccountTv.setText("￥" + maxAmount);
+						payMoneyTv.setText("￥" + PriceTools.formatStr(shippingFee));
+						// totalCountTv.setText("￥0.00");
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				Toast.makeText(SettleAccountActivity.this, "输入的数字错误或超限", Toast.LENGTH_SHORT).show();
+				cashEt.setText("");
+			}
+			
+			// shippingFeeTv.setText("￥" + PriceTools.formatStr(shippingFee));
+		}
+	};
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		requestServer(requestMemberInfo, false);
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		if (this.getCurrentFocus() != null) {// 隐藏软键盘
+			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this
+					.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+		super.onPause();
+	}
+
+	/**
+	 * 求共需支付的金额, 共需支付的金额 = 商品小计 + 运费 - 优惠券的优惠金额 - 现金账户输入的金额；
+	 * 
+	 * @param sumAmount
+	 *            商品小计
+	 * 
+	 * @param shippingFee
+	 *            运费
+	 * @param ticketDiscount
+	 *            优惠券的优惠金额
+	 * @param cashAmount
+	 *            现金账户输入的金额
+	 * @return 共需支付的金额
+	 */
+	private String getPayMoney(String sumAmount, String shippingFee, String ticketDiscount, String cashAmount) {
+		int sum = PriceTools.stringToInt(sumAmount);
+		int shipFee = PriceTools.stringToInt(shippingFee);
+		int grant = PriceTools.stringToInt(ticketDiscount);
+		int cash = PriceTools.stringToInt(cashAmount);
+		int payM = sum + shipFee - grant - cash;
+		if (payM < 0) {
+			cashAccountTv.setText(PriceTools.intToString(sum + shipFee - grant));
+			return "0.00";
+		}
+		System.out.println("payM共需支付的金额" + payM);
+		return PriceTools.intToString(payM);
+	}
+
+	/**
+	 * @param Amount
+	 *            总金额
+	 * @param shippingFee
+	 *            邮费
+	 * @return 最多可以使用的现金账户
+	 */
+	private String getNowPayMoney(String Amount, String shippingFee) {
+		int sum = PriceTools.stringToInt(Amount);
+		int shipFee = PriceTools.stringToInt(shippingFee);
+		int payM = sum - shipFee;
+
+		return PriceTools.intToString(payM);
+	}
+
+	/**
+	 * 得到优惠金额，优惠金额为：优惠券的的优惠金额 + 商品优惠金额
+	 * 
+	 * @return
+	 */
+	private String getDiscountAmount(String discountAmount, String grantAmount) {
+		int dis = PriceTools.stringToInt(discountAmount);
+		int grant = PriceTools.stringToInt(grantAmount);
+		int disA = dis + grant;
+		return PriceTools.intToString(disA);
+	}
+
+	/**
+	 * 得到商品小计；商品小计为：sumAmount - 优惠金额（优惠券优惠金额）- 现金账户输入的金额
+	 */
+	private String getTotalAmount(String sumAmount, String discountAmount, String cashAmount) {
+		int sum = PriceTools.stringToInt(sumAmount);
+		int dis = PriceTools.stringToInt(discountAmount);
+		int cash = PriceTools.stringToInt(cashAmount);
+		int sumA = sum - dis - cash;
+		if (sumA < 0) {
+			cashAccountTv.setText(PriceTools.intToString(sum - dis));
+			return "0.00";
+		}
+		return PriceTools.intToString(sumA);
+	}
+
+}

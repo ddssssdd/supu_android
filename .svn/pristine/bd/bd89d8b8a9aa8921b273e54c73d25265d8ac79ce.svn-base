@@ -1,0 +1,694 @@
+package cc.android.supu;
+
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import cc.android.supu.handler.UpdateHandler;
+import cc.android.supu.tools.ConstantUrl;
+import cc.android.supu.tools.PublicParams;
+import cc.android.supu.tools.Tools;
+
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Looper;
+import android.os.Message;
+import android.os.StatFs;
+import android.text.Html;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+/**
+ * 检查更新页面
+ * @author sheng
+ *
+ */
+public class UpdateActivity extends BaseActivity {
+	
+	/** 下载完成的消息码*/
+	private static final int NOTIFY_DOWLOADED = 5;
+	/** 通知进度条更新进度的消息码*/	
+	private static final int NOTIFY_PROGRESS = 6;
+	/** IO异常通知*/
+	private static final int NOTIFY_IOE = 7;
+	/** 网络异常通知*/
+	private static final int NOTIFY_CLIENTPROTOCOLE = 8;
+	/** 空间不足通知*/
+	private static final int NOTIFY_SPACE_SHORTAGE = 9;
+	/** 无法获知文件大小*/
+	private static final int NOTIFY_UNKNOW_SIZE = 10;
+	/** 显示版本*/
+	private TextView versionTv;
+	/** 更新按钮*/
+	private TextView updateBtn;
+	/** 更新信息解析器*/
+	private UpdateHandler updateHandler;
+	/** 下载地址*/
+	private String downloadUrl = "";
+	/** 是否强制升级*/
+	private boolean forceUpdate = false;
+	/** 是否正在升级*/
+	private boolean isUpdating;
+	/** 下载对话框*/
+	private ProgressDialog pDialog;
+	/** 进度条的进度*/
+	private int progress;
+	/** 文件名*/
+	private String fileName = "";
+	/** 版本信息*/
+	private String versionInfo = "";
+	/** 标记apk的存储位置，0：sd卡，1：手机内存*/
+	private int mark = 0;
+	/** sd卡目录路径*/
+	private final String SDPATH = Environment.getExternalStorageDirectory().toString() + "/";
+	/** 手机缓存的目录路径*/
+	private String cachePath = "";
+
+	private UpdateActivity context = this;
+	
+	@Override
+	protected String setTitle() {
+		// TODO Auto-generated method stub
+		return "检查更新";
+	}
+	@Override
+	protected String setBackBtn() {
+		// TODO Auto-generated method stub
+		return "返回";
+	}
+	@Override
+	protected void onSubActivityClick(View view) {
+		// TODO Auto-generated method stub
+		loadThread();
+	}
+	@Override
+	protected void initPage() {
+		// TODO Auto-generated method stub
+		versionTv = (TextView) findViewById(R.id.update_Version);
+		versionTv.getPaint().setFakeBoldText(true);
+		versionTv.setText(Html.fromHtml("当前版本：速普商城for Android 版本" + 
+				PublicParams.getAppVersion() + "<br/>" + "最新版本：速普商城for Android 版本" 
+				+ PublicParams.getAppVersion()));
+		
+		updateBtn = (TextView) findViewById(R.id.update_updateBtn);
+		updateBtn.setOnClickListener(this);
+		getCachePath();
+//		System.out.println("SDPATH="+SDPATH);
+//		System.out.println("CACHEPATH="+cachePath);
+		requestServer(defaultPageRequest);
+	}
+	
+	@Override
+	int setLayout() {
+		// TODO Auto-generated method stub
+		return R.layout.update;
+	}
+
+	@Override
+	int setBottomIndex() {
+		// TODO Auto-generated method stub
+		return 4;
+	}
+	
+	@Override
+	protected void defaultRequest() {
+		// TODO Auto-generated method stub
+		updateHandler = new UpdateHandler();
+		Tools.requestToParse(this, ConstantUrl.UPDATE, "Update", null, updateHandler, false);
+		if(Tools.responseValue == 1){
+			if(updateHandler.result_code == 0){
+				handler.sendEmptyMessage(STATE_SUCCESS);
+			}else if(updateHandler.result_code == 1){
+				handler.sendEmptyMessage(STATE_FAILURE);
+			}
+		}else{
+			handler.sendEmptyMessage(STATE_ERROR);
+		}
+//		System.out.println("updateHandler.result_code="+updateHandler.result_code);
+	}
+	
+	@Override
+	protected void dealwithMessage(Message msg) {
+		//目录路径
+		String dir = "";
+		switch (msg.what) {
+		case STATE_SUCCESS:
+			Toast.makeText(this, "当前已是最新版本！", Toast.LENGTH_SHORT).show();
+			
+			break;
+		case STATE_FAILURE:
+			if(updateHandler.result_code == 1){
+				downloadUrl = updateHandler.downloadUrl;
+//				System.out.println("downloadUrl="+downloadUrl);
+				forceUpdate = updateHandler.forceUpdate;
+				fileName = getFileName(updateHandler.versionNo + "");
+				versionInfo = getVersionInfo(updateHandler.versionNo + "", updateHandler.versionInfo);
+				versionTv.setText(Html.fromHtml("当前版本：速普商城for Android 版本" + PublicParams.getAppVersion() 
+						+ "<br/>" + "最新版本：速普商城for Android 版本" + updateHandler.versionNo));
+
+				updateBtn.setVisibility(View.VISIBLE);
+				Toast.makeText(this, updateHandler.result_message, Toast.LENGTH_SHORT).show();
+				
+			}else if(updateHandler.result_code == 2){
+				Toast.makeText(this, "获取更新失败！", Toast.LENGTH_SHORT).show();
+			}else{
+				Toast.makeText(this, "服务器异常！", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case STATE_ERROR:
+			Toast.makeText(this, "请求异常！", Toast.LENGTH_SHORT).show();
+			break;
+		case NOTIFY_DOWLOADED://下载完成
+			cancelPDialog();
+			if(forceUpdate){//强制升级
+				installStart();
+			}else{
+				showloadedDialog();
+			}
+			
+			break;
+		case NOTIFY_PROGRESS://更新进度
+			if(null != msg.obj){
+				progress = (Integer) msg.obj;
+			}
+			setProgress();
+			break;
+		case NOTIFY_IOE://io异常
+			isUpdating = false;
+			dir = (String) msg.obj;
+			if(SDPATH.equals(dir)){//在sd卡中文件创建失败，就转为在手机中创建文件
+				mark = 1;
+				loadThread();
+			}else{
+				cancelPDialog();
+				Toast.makeText(this, "I/O异常！", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case NOTIFY_CLIENTPROTOCOLE:
+			showAlertDialog("网络连接异常，速普商城下载中断，请重新下载");
+			break;
+		case NOTIFY_SPACE_SHORTAGE://空间不足
+			dir = (String) msg.obj;
+			if(SDPATH.equals(dir)){//在sd卡中文件创建失败，就转为在手机中创建文件
+				mark = 1;
+				loadThread();
+			}else if(cachePath.equals(dir)){//若手机中的存储空间也不足，则提示空间不足
+				cancelPDialog();
+				showAlertDialog("存储空间不足！");
+			}
+			break;
+		case NOTIFY_UNKNOW_SIZE:
+			cancelPDialog();
+			Toast.makeText(this, "无法获知文件大小！", Toast.LENGTH_SHORT).show();
+			break;
+		}
+	}
+	
+	/**
+	 * 获得手机中的缓存目录
+	 */
+	private void getCachePath(){
+		cachePath =  context.getCacheDir().getAbsoluteFile() + "/";
+	}
+	
+	/** 
+	 * 构造文件名
+	 * @param versionNo
+	 * @return 文件名
+	 */
+	private String getFileName(String versionNo){
+		StringBuffer buf = new StringBuffer();
+		buf.append("supu_v").append(versionNo).append(".apk");
+		return  buf.toString();
+	}
+	
+	/**
+	 * 构造版本信息
+	 * @return
+	 */
+	private String getVersionInfo(String versionNo, String versionInfo){
+		StringBuffer buf = new StringBuffer();
+		buf.append("速普商城").append(versionNo).append(versionInfo);
+		return  buf.toString();
+	}
+	/**
+	 * 带进度条的下载对话框
+	 */
+	private void showLoadingDialog(String msg){
+		msg = "正在下载，请耐心等待...";
+		pDialog = new ProgressDialog(this);
+		pDialog.setTitle("下载提示");
+		pDialog.setMessage(Html.fromHtml(msg));
+		pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		pDialog.setCanceledOnTouchOutside(false);
+		pDialog.setCancelable(false);
+		if(!forceUpdate){//强制升级不显示取消按钮
+			pDialog.setButton("取消", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					isUpdating = false;
+					dialog.dismiss();
+				}
+			});
+		}
+		pDialog.show();
+	}
+	
+	/**
+	 * 取消下载对话框
+	 */
+	private void cancelPDialog(){
+		if(pDialog != null){
+			pDialog.dismiss();
+		}
+		isUpdating = false;
+	}
+	/**
+	 * 提醒对话框
+	 * @param message
+	 */
+	private void showAlertDialog(String message){
+		Dialog alertDialog = new AlertDialog.Builder(this)
+		.setTitle("温馨提示")
+		.setMessage(message)
+		.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		})
+		.create();
+		alertDialog.show();
+	}
+	/**
+	 * 给pDialog的进度条设置进度
+	 */
+	private void setProgress(){
+		if(pDialog != null && pDialog.isShowing()){
+			pDialog.setProgress(progress);
+		}
+	}
+	
+	
+	
+	/**
+	 * 下载完成对话框
+	 */
+	private void showloadedDialog(){
+		Dialog dialogLoaded = new AlertDialog.Builder(this)
+		.setTitle("温馨提示")
+		.setMessage("已下载完成，安装吗？")
+		.setPositiveButton("安装", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				installStart();
+			}
+		})
+		.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		})
+		.create();
+		dialogLoaded.show();
+	}
+	
+
+	
+	/**
+	 * 修改读写权限
+	 */
+	private void changeLimits(int mark, String path){
+		if(mark == 0){
+			String[] args1 = { "chmod", "775", path};
+			exec(args1);
+			String[] args2 = { "chmod", "775", path + fileName };
+			exec(args2);
+		}else{
+			String[] args1 = { "chmod", "775", path};
+			exec(args1);
+			String[] args2 = { "chmod", "775", path + fileName };
+			exec(args2);
+		}
+	}
+	
+	
+	/**
+	 * 开启一个用于下载Apk的线程
+	 */
+	private void loadThread(){
+		if(!Tools.isAccessNetwork(this)){//判断网络是否可用
+			Toast.makeText(this, "网络无效，请检查网络！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		if(null == downloadUrl || "".equals(downloadUrl)){
+			Toast.makeText(this, "下载链接无效！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		if(null == fileName || "".equals(fileName)){
+			fileName = "supu_v.latest.apk";
+		}
+	
+		if(isUpdating){//是否正在升级,正在升级则不能更新
+			Toast.makeText(this, "系统正在更新！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		if(null == pDialog){
+			showLoadingDialog(updateHandler.versionInfo);
+		}else if(!pDialog.isShowing()){
+			pDialog.show();
+			pDialog.setProgress(0);
+		}
+		isUpdating = true;
+		new Thread(){
+			public void run() {
+				Looper.prepare();
+//				HttpClient client = new DefaultHttpClient();
+//				HttpGet httpGet = new HttpGet(downloadUrl);
+//				HttpResponse response;
+				
+				InputStream is = null;
+				FileOutputStream fos = null;
+				try {
+					URL url = new URL(downloadUrl);
+//					System.out.println("downloadUrl="+downloadUrl);
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setConnectTimeout(5000);
+					conn.setReadTimeout(5000);
+					long fileSize = conn.getContentLength();
+//					System.out.println("fileSize="+fileSize);
+					if(fileSize <= 0){
+						sendMsg(NOTIFY_UNKNOW_SIZE, null);
+						return;
+					}
+					is = conn.getInputStream();
+					if(is == null){
+						sendMsg(NOTIFY_IOE, null);
+						return;
+					}
+					switch (mark) {
+					case 0:
+						if(IsCanUseSdCard() && Tools.getSDSize() >= fileSize*2 + 100000){
+							changeLimits(mark, SDPATH);//修改读写权限
+							fos = creatFile(SDPATH, fileName);
+						}else{
+							sendMsg(NOTIFY_SPACE_SHORTAGE, SDPATH);
+							return;
+						}
+						break;
+						
+					default :
+						if(getAvailableInternalMemorySize() >= fileSize*2 + 100000){
+							changeLimits(mark, cachePath);//修改读写权限
+							fos = creatFile(cachePath, fileName);
+						}else{
+							sendMsg(NOTIFY_SPACE_SHORTAGE, cachePath);
+							return;
+						}
+						break;
+					}
+					
+					if(fos == null){
+						sendMsg(NOTIFY_IOE, null);
+						return;
+					}
+					
+					long downloadFileSize = 0;
+					byte[] buf = new byte[1024];
+					
+					int len = 0;
+					while ((len = is.read(buf)) != -1) {
+						fos.write(buf, 0, len);
+						downloadFileSize += len;
+						double progress = (double)downloadFileSize / (double)fileSize *(double)100;
+						sendMsg(NOTIFY_PROGRESS, (int)progress);//通知进度条更新进度
+						if(!isUpdating){
+							break;
+						}
+					}
+//					System.out.println("downloadFileSize="+downloadFileSize);
+					if(isUpdating){
+						sendMsg(NOTIFY_DOWLOADED, null);//通知下载完成
+					}
+					
+					fos.flush();
+					if(is != null){
+						is.close();
+					}
+					if(fos != null){
+						fos.close();
+					}
+					
+				} catch (ClientProtocolException e){
+					sendMsg(NOTIFY_CLIENTPROTOCOLE, null);
+				} catch (IOException e) {
+					sendMsg(NOTIFY_IOE, null);
+				}
+			};
+		}.start();
+		
+	}
+	
+	
+	/**
+	 * 启动安装apk
+	 */
+	private void installStart(){
+		Intent intent = new Intent();
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setAction(Intent.ACTION_VIEW);
+		if(mark == 0){
+//			System.out.println("new File(SDPATH, fileName)="+new File(SDPATH, fileName));
+			intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory(), fileName)),
+					"application/vnd.android.package-archive");
+			startActivity(intent);
+			
+		}else if(mark == 1){
+//			System.out.println("new File(cachePath, fileName)="+new File(cachePath, fileName));
+			intent.setDataAndType(Uri.fromFile(new File(context.getCacheDir().getAbsoluteFile(), fileName)),
+					"application/vnd.android.package-archive");
+			startActivity(intent);
+		}
+		exitApp();
+	}
+	
+	/**
+	 * 判断是否有sd卡
+	 * 
+	 * @return
+	 */
+	private boolean IsCanUseSdCard() {
+		try {
+			return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * 获取剩余内部存储空间
+	 * @return long
+	 */
+	public static long getAvailableInternalMemorySize() {
+		File path = Environment.getDataDirectory();
+		StatFs stat = new StatFs(path.getPath());
+		long blockSize = stat.getBlockSize();
+		long availableBlocks = stat.getAvailableBlocks();
+		return availableBlocks * blockSize;
+	}
+	
+	/**
+	 * supu.apk是否已存在
+	 * @return boolean
+	 */
+	private boolean isFileExist(String fileName, String dirPath){
+		File file = new File(dirPath, fileName);
+		return file.exists();
+	}
+	
+	/**
+	 * 文件如果存在就安装
+	 * return boolean
+	 * 				true 
+	 * 					文件已存在，并执行安装
+	 * 				false 
+	 * 					文件不存在
+	 */
+	private boolean ifExistInstall(long loadFileSize){
+		if(isFileExist(fileName, SDPATH)){
+			mark = 0;
+		
+			if(getFileLength(SDPATH + fileName) != loadFileSize){
+				return false;
+			}
+			installStart();
+			return true;
+		}else if(isFileExist(fileName, cachePath)){
+			mark = 1;
+			if(getFileLength(SDPATH + fileName) != loadFileSize){
+				return false;
+			}
+			installStart();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 
+	 * @param filePath
+	 * 					文件路径
+	 * @return long
+	 * 				文件的长度
+	 */
+	private long getFileLength(String filePath){
+		File file = new File(filePath);
+		return file.length();
+	}
+	
+	/**
+	 * 发送通知
+	 */
+	private void sendMsg(int what, Object o){
+		handler.sendMessage(handler.obtainMessage(what, o));
+	}
+	
+	/**
+	 * 创建文件得到文件输出流
+	 * @param dir  
+	 * 				目录
+	 * @param fileName
+	 * 					文件名
+	 * @return FileOutputStream
+	 * 						
+	 */
+	private FileOutputStream creatFile(String dir, String fileName ){
+//		System.err.println("path="+dir+fileName);
+		FileOutputStream fos = null;
+		File file = new File(dir, fileName);
+//		System.out.println("file="+file.getPath());
+		try {
+			file.createNewFile();
+			fos = new FileOutputStream(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			sendMsg(NOTIFY_IOE, dir);
+		}
+		return fos;
+	}
+	
+	/**
+	 * 退出应用
+	 */
+	private void exitApp(){
+		SupuApplication.exit();
+		finish();
+	}
+	
+	
+	
+	/** 执行Linux命令，并返回执行结果。 */
+
+	public static String exec(String[] args) {
+
+		String result = "";
+
+		ProcessBuilder processBuilder = new ProcessBuilder(args);
+
+		Process process = null;
+
+		InputStream errIs = null;
+
+		InputStream inIs = null;
+
+		try {
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			int read = -1;
+
+			process = processBuilder.start();
+
+			errIs = process.getErrorStream();
+
+			while ((read = errIs.read()) != -1) {
+
+				baos.write(read);
+
+			}
+
+			baos.write('\n');
+
+			inIs = process.getInputStream();
+
+			while ((read = inIs.read()) != -1) {
+
+				baos.write(read);
+
+			}
+
+			byte[] data = baos.toByteArray();
+
+			result = new String(data);
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		} finally {
+
+			try {
+				if (errIs != null) {
+					errIs.close();
+				}
+				
+				if (inIs != null) {
+					inIs.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (process != null) {
+				process.destroy();
+			}
+		}
+		return result;
+	}
+}

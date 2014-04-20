@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/goodsdetails_item_image1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@anim/shape_shopcar_img_bg"
+        android:focusable="false"
+        android:scaleType="fitXY"
+        android:src="@drawable/defalut_middle" />
+
+    <ImageView
+        android:id="@+id/goodsdetails_item_image2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@anim/shape_shopcar_img_bg"
+        android:focusable="false"
+        android:scaleType="fitXY"
+        android:src="@drawable/defalut_middle" />
+
+</LinearLayout>

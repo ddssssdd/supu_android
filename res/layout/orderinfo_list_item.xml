@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="70dip"
+    android:paddingTop="5dip"
+    android:paddingBottom="5dip"
+    android:background="@anim/shopcart_item_bg"
+    android:orientation="vertical" >
+    
+     <ImageView
+         android:id="@+id/GOODSImage"
+         android:layout_width="55dip"
+         android:layout_height="55dip"
+         android:layout_alignParentLeft="true"
+         android:layout_marginLeft="10dip"
+         android:layout_marginRight="10dip"
+         android:background="@drawable/defalut_middle" />
+
+     <ProgressBar
+         android:id="@+id/orderInfo_progressbar"
+         style="@android:style/Widget.ProgressBar.Small"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_marginLeft="32dip"
+         android:layout_marginTop="18dip" />
+
+     <TextView
+         android:id="@+id/infoGoodsName"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentTop="true"
+         android:layout_marginTop="2dip"
+         android:layout_marginRight="15dip"
+         android:layout_toRightOf="@+id/GOODSImage"
+         android:maxLines="2"
+         android:text="商品的名称"
+         android:textColor="#000000"
+         android:textSize="13dip" />
+
+     <TextView
+         android:id="@+id/infoGOODSPrice"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_toLeftOf="@+id/connector"
+         android:layout_alignBaseline="@+id/connector"
+         android:layout_alignParentBottom="true"
+         android:text="258.00"
+         android:textStyle="bold"
+         android:textColor="#ff0000"
+         android:textSize="18dip" />
+
+     <TextView
+         android:id="@+id/connector"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_toLeftOf="@+id/infoCount"
+         android:layout_alignParentBottom="true"
+         android:gravity="bottom"
+         android:text="X"
+         android:textColor="#000000"
+         android:textSize="14dip" />
+
+     <TextView
+         android:id="@+id/infoCount"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginRight="15dip"
+         android:layout_alignParentRight="true"
+         android:layout_alignBaseline="@+id/connector"
+         android:layout_alignParentBottom="true"
+         android:text="10"
+         android:textColor="#000000"
+         android:textSize="18dip" />
+	
+</RelativeLayout>

@@ -1,0 +1,25 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@drawable/background_ashen">
+	
+    <cc.android.supu.view.FllingGallery
+	    android:id="@+id/gallery"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:spacing="0dip"/>
+    
+    <LinearLayout 
+        android:id="@+id/pointLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dip"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+        
+    </LinearLayout>
+    
+    
+</RelativeLayout>

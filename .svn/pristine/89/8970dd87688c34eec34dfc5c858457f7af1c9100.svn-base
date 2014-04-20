@@ -1,0 +1,30 @@
+package cc.android.supu.handler;
+
+import org.json.JSONObject;
+
+import cc.android.supu.bean.MemberBean;
+
+/**
+ * 获取用户信息解析类
+ * @author sheng
+ *
+ */
+public class GetMemberInfoHandler extends DefaultJSONData {
+	
+	public MemberBean memberBean;
+	
+	@Override
+	public void parse(JSONObject object) {
+		// TODO Auto-generated method stub
+		JSONObject data = object.optJSONObject("Data");
+		if(data != null){
+			memberBean = new MemberBean();
+			memberBean.memberId = data.optJSONObject("Member").optString("MemberId");
+			memberBean.account = data.optJSONObject("Member").optString("Account");
+			memberBean.level = data.optJSONObject("Member").optInt("Level");
+			memberBean.price = data.optJSONObject("Member").optString("Price");
+//	memberBean.price = "500";
+			memberBean.scores = data.optJSONObject("Member").optInt("Scores");
+		}
+	}
+}

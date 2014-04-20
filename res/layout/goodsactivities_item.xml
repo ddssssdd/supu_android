@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    
+    <TextView 
+        android:id="@+id/goodsactivities_item_headview"
+        android:layout_width="fill_parent"
+    	android:layout_height="10dip"
+    	android:visibility="gone"/>
+    
+    <LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:background="@anim/shape_ticketinfo_layout_bg"
+	    android:orientation="vertical" >
+	    
+	    <TextView 
+	        android:id="@+id/goodsactivities_item_name"
+	        android:layout_width="fill_parent"
+	 		android:layout_height="wrap_content"
+	 		android:gravity="center"
+	 		android:textColor="#000000"
+	 		android:textSize="16sp"
+	 		android:text="美赞臣满300减40"/>
+	     
+	     <ImageView 
+	        android:id="@+id/goodsactivities_item_img"
+	        android:layout_width="fill_parent"
+	 		android:layout_height="wrap_content"
+	 		android:src="@drawable/defalut_middle"
+	 		android:scaleType="fitCenter"/>
+	     
+	     <TextView 
+	        android:id="@+id/goodsactivities_item_Description"
+	        android:layout_width="fill_parent"
+	 		android:layout_height="wrap_content"
+	 		android:textColor="#000000"
+	 		android:textSize="14sp"/>
+	</LinearLayout>
+	
+    <TextView 
+        android:id="@+id/goodsactivities_item_footerview"
+        android:layout_width="fill_parent"
+    	android:layout_height="10dip"
+    	android:visibility="gone"/>
+</LinearLayout>

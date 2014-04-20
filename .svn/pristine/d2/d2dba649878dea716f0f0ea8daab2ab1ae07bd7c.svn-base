@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:fadingEdge="none" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="15dip"
+                android:background="@anim/shape_rounded_rectangle"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:id="@+id/more_baodian"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@anim/more_btn_top_bg"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/more_baodian_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/baodian_logo"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="17dip"
+                        android:layout_marginLeft="12dip"
+                        android:layout_marginTop="17dip"
+                        android:layout_toRightOf="@id/more_baodian_icon"
+                        android:gravity="center"
+                        android:text="孕婴宝典"
+                        android:textColor="#4b4b4b"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingRight="20dip"
+                        android:src="@drawable/arrow" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/more_scan"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-10px"
+                    android:background="@anim/more_btn_bottom_bg"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/more_scan_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/scan_logo"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="17dip"
+                        android:layout_marginLeft="12dip"
+                        android:layout_marginRight="5dip"
+                        android:layout_marginTop="17dip"
+                        android:layout_toRightOf="@id/more_scan_icon"
+                        android:text="最近浏览"
+                        android:textColor="#4b4b4b"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingRight="20dip"
+                        android:src="@drawable/arrow" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="15dip"
+                android:background="@anim/shape_rounded_rectangle"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:id="@+id/more_set"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@anim/more_btn_top_bg"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/more_set_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/set_logo"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="17dip"
+                        android:layout_marginLeft="12dip"
+                        android:layout_marginTop="17dip"
+                        android:layout_toRightOf="@id/more_set_icon"
+                        android:gravity="center"
+                        android:text="设置"
+                        android:textColor="#4b4b4b"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingRight="20dip"
+                        android:src="@drawable/arrow" />
+                </RelativeLayout>
+                <!--
+	<LinearLayout 
+	android:layout_width="fill_parent"
+	android:layout_height="1dip"
+	android:background="#bdbdbd">
+	</LinearLayout>
+                -->
+
+                <RelativeLayout
+                    android:id="@+id/more_update"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dip"
+                    android:layout_marginRight="1dip"
+                    android:background="@anim/more_btn_rectangle_bg"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/more_update_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/update_logo"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="16dip"
+                        android:layout_marginLeft="12dip"
+                        android:layout_marginTop="16dip"
+                        android:layout_toRightOf="@id/more_update_icon"
+                        android:gravity="center"
+                        android:text="检查更新"
+                        android:textColor="#4b4b4b"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingRight="20dip"
+                        android:src="@drawable/arrow" />
+                </RelativeLayout>
+                <!--
+	<LinearLayout 
+	android:layout_width="fill_parent"
+	android:layout_height="1dip"
+	android:background="#bdbdbd">
+	</LinearLayout>
+                -->
+
+                <RelativeLayout
+                    android:id="@+id/more_y"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@anim/more_btn_bottom_bg"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/more_y_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/y_logo"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="17dip"
+                        android:layout_marginLeft="12dip"
+                        android:layout_marginTop="17dip"
+                        android:layout_toRightOf="@id/more_y_icon"
+                        android:gravity="center"
+                        android:text="意见反馈"
+                        android:textColor="#4b4b4b"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingRight="20dip"
+                        android:src="@drawable/arrow" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/more_about"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="15dip"
+                android:background="@anim/more_btn_bg"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/more_about_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/about_logo"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/login_more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="17dip"
+                        android:layout_marginLeft="12dip"
+                        android:layout_marginTop="17dip"
+                        android:layout_toRightOf="@id/more_about_icon"
+                        android:gravity="center"
+                        android:text="关于我们"
+                        android:textColor="#4b4b4b"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingRight="20dip"
+                        android:src="@drawable/arrow" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

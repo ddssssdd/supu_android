@@ -1,0 +1,99 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/indexscroll"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000000" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:background="@drawable/index_subbg"
+            android:gravity="center_vertical" >
+
+            <ImageButton
+                android:id="@+id/barcode_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="@anim/barcode_bg"
+                android:contentDescription="@string/barcode" />
+
+            <ImageButton
+                android:id="@+id/search_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/barcode_btn"
+                android:background="@anim/search_bg"
+                android:contentDescription="@string/search"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/search_key"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:drawableLeft="@drawable/search_icon"
+                android:layout_toLeftOf="@id/search_btn"
+                android:background="@drawable/search_bg"
+                android:imeOptions="actionSearch"
+                android:paddingLeft="5dp"
+                android:singleLine="true"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <cc.android.supu.view.FllingGallery
+                android:id="@+id/index_gallery"
+                android:layout_width="fill_parent"
+                android:layout_height="180dp"
+                android:contentDescription="@string/index_gallery" />
+
+            <ImageView
+                android:id="@+id/index_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/index_gallery"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/baby_background" >
+
+            <ImageButton
+                android:id="@+id/baby_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@anim/baby_bg" />
+        </RelativeLayout>
+
+        <cc.android.supu.view.IndexEcpandableListView
+            android:id="@+id/indexproductgoods"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:groupIndicator="@null" />
+    </LinearLayout>
+
+</ScrollView>

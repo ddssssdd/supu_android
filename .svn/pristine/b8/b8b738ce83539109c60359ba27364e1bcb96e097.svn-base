@@ -1,0 +1,126 @@
+package cc.android.supu.datebase;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import cc.android.supu.R;
+import cc.android.supu.tools.UserInfoTools;
+
+/**
+ * 城市 这里添加一个本地的默认数据库 但是在数据库更新的时候还是需要很长的时间大约2分钟（網速有關 插入數據有關）
+ * 
+ * @author zsx
+ * 
+ */
+public class SQLiteHelperCity extends SQLiteOpenHelper {
+
+	/** 数据库操作对象 */
+	private SQLiteDatabase db = null;
+	/** 数据库名 */
+	private static final String DATABASE_NAME = "supu1.db";
+	/** 数据库版本号 */
+	private static final int DATABASE_VERSION = 1;
+	private ArrayList<String> cityState;
+	private Context context;
+	private File file = null;
+	public static final String DB_NAME = "supu1.db";
+	public static final String PACKAGE_NAME = "cc.android.supu";
+	public static final String DB_PATH = "/data"
+			+ Environment.getDataDirectory().getAbsolutePath() + "/"
+			+ PACKAGE_NAME;
+	private final int BUFFER_SIZE = 1024;
+
+	public SQLiteHelperCity(Context context) {
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		this.context = context;
+	}
+
+	/**
+	 * 得到数据库isEmpty="0" 要是空 或者版本没变version1="1" 就用默认的数据库
+	 * 
+	 * @return
+	 */
+	public SQLiteDatabase getDatabase() {
+		if (db != null && db.isOpen()) {
+			db.close();
+		}
+		cityState = UserInfoTools.getCity(context);
+		String isEmpty = "0";
+		String version1 = "1";
+		if (cityState != null && cityState.size() > 0) {
+
+			isEmpty = cityState.get(0);
+			version1 = cityState.get(1);
+//			System.out.println("11isEmpty" + isEmpty);
+//			System.out.println("version1" + version1);
+		}
+		if (isEmpty.equals("0") || version1.equals("1")) {
+//			System.out.println("现有数据库");
+			db = this.openDatabase(DB_PATH + "/" + DB_NAME);
+			if (null == db) {
+				db = getWritableDatabase();
+			}
+		} else {
+//			System.out.println("创建的数据库");
+			db = getWritableDatabase();// 创建数据库对象
+		}
+		return db;
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		// TODO Auto-generated method stub
+		// 创建购物车表
+		AllCityListDbHelper.creatTableAllCity(db);
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		// TODO Auto-generated method stub
+		db.execSQL("drop table if exists " + AllCityListDbHelper.TABLE_NAME);
+		onCreate(db);
+	}
+
+	private SQLiteDatabase openDatabase(String dbfile) {
+		try {
+			file = new File(dbfile);
+			if (!file.exists()) {
+				InputStream is = context.getResources().openRawResource(
+						R.raw.supu1);
+				if (is != null) {
+				} else {
+				}
+				FileOutputStream fos = new FileOutputStream(dbfile);
+				if (is != null) {
+				} else {
+				}
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int count = 0;
+				while ((count = is.read(buffer)) > 0) {
+					fos.write(buffer, 0, count);
+					fos.flush();
+				}
+				fos.close();
+				is.close();
+			}
+			db = SQLiteDatabase.openOrCreateDatabase(dbfile, null);
+			return db;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+}

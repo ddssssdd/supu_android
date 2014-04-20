@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:paddingBottom="20dip"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:paddingTop="15dip" >
+
+            <RelativeLayout
+                android:id="@+id/settleaccount_baseInfo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@anim/settle_layout_bg"
+                android:paddingBottom="10dip"
+                android:paddingTop="10dip" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/arrow1"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            style="@style/goodsdetails_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="收件人：" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_Consignee"
+                            style="@style/goodsdetails_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dip"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            style="@style/goodsdetails_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="手机：" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_Tel"
+                            style="@style/goodsdetails_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dip"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            style="@style/goodsdetails_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="地址：" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_Address"
+                            style="@style/goodsdetails_text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dip"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            style="@style/goodsdetails_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="邮编：" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_ZipCode"
+                            style="@style/goodsdetails_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/arrow1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dip"
+                    android:background="@drawable/arrow" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settleaccount_PayNameLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dip"
+                android:background="@anim/settle_layout_bg"
+                android:paddingBottom="15dip"
+                android:paddingTop="15dip" >
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/arrow1" >
+
+                    <TextView
+                        android:id="@+id/Paymnent"
+                        style="@style/goodsdetails_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:text="支付方式：" />
+
+                    <ProgressBar
+                        android:id="@+id/settleaccount_Paymnent_progressBar"
+                        android:layout_width="15dip"
+                        android:layout_height="15dip"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/Paymnent"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/settleaccount_Paymnent"
+                        style="@style/goodsdetails_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/settleaccount_Paymnent_progressBar" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/arrow2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dip"
+                    android:background="@drawable/arrow" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settleaccount_cashAccountLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dip"
+                android:background="@anim/shape_ticketinfo_layout_bg"
+                android:paddingBottom="10dip"
+                android:paddingTop="10dip" >
+
+                <TextView
+                    android:id="@+id/settleaccount_cashAccount_red"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="现金账户"
+                    android:textColor="@color/red"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/settleaccount_cashEt"
+                    android:layout_width="150dip"
+                    android:layout_height="30dip"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dip"
+                    android:layout_toRightOf="@+id/settleaccount_cashAccount_red"
+                    android:background="@null"
+                    android:digits="0123456789."
+                    android:inputType="numberDecimal"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/settleaccount_cashEt"
+                    android:text="元"
+                    android:textColor="#000000"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settleaccount_ShippingNameLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dip"
+                android:background="@anim/settle_layout_bg"
+                android:paddingBottom="15dip"
+                android:paddingTop="15dip" >
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/arrow1" >
+
+                    <TextView
+                        android:id="@+id/ShippingName"
+                        style="@style/goodsdetails_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="配送方式：" />
+
+                    <ProgressBar
+                        android:id="@+id/settleaccount_ShippingName_progressBar"
+                        android:layout_width="15dip"
+                        android:layout_height="15dip"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/ShippingName"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/settleaccount_ShippingName"
+                        style="@style/goodsdetails_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/settleaccount_ShippingName_progressBar" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/arrow4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dip"
+                    android:background="@drawable/arrow" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settleaccount_ticketsLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dip"
+                android:background="@anim/settle_layout_bg"
+                android:padding="0dp" >
+
+                <TextView
+                    android:id="@+id/ticket"
+                    style="@style/goodsdetails_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="30dip"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="30dip"
+                    android:text="优惠券:" />
+
+                <ImageView
+                    android:id="@+id/arrow5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dip"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="10dp"
+                    android:scaleType="center"
+                    android:src="@drawable/arrow" />
+
+                <TextView
+                    android:id="@+id/settleaccount_ticketName"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dip"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dip"
+                    android:layout_toLeftOf="@id/arrow5"
+                    android:layout_toRightOf="@+id/ticket"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:hint="选择优惠卷"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textColorHint="#AAAAAA"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dip"
+                android:background="@anim/shape_ticketinfo_layout_bg"
+                android:paddingBottom="10dip"
+                android:paddingTop="10dip" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/arrow1"
+                    android:orientation="vertical" >
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="您共需支付："
+                            android:textColor="#000000"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_PayMoney"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/red"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dip" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="商品小计："
+                            android:textColor="#000000"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_totalCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/red"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dip" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="优惠金额："
+                            android:textColor="#000000"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_Discount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/red"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dip" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="运费："
+                            android:textColor="#000000"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_ShippingFee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/red"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dip" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="现金账户："
+                            android:textColor="#000000"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/settleaccount_cashAccount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/red"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settleaccount_leaveMessage"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dip"
+                android:background="@anim/settle_layout_bg"
+                android:paddingBottom="15dip"
+                android:paddingTop="15dip" >
+
+                <TextView
+                    android:id="@+id/leavemsg"
+                    style="@style/goodsdetails_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:text="留言" />
+
+                <TextView
+                    android:id="@+id/settleaccount_leavemsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dip"
+                    android:layout_marginRight="10dip"
+                    android:layout_toLeftOf="@+id/arrow2"
+                    android:layout_toRightOf="@+id/leavemsg"
+                    android:textColor="#000000"
+                    android:textSize="13sp" />
+
+                <ImageView
+                    android:id="@+id/arrow2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dip"
+                    android:background="@drawable/arrow" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

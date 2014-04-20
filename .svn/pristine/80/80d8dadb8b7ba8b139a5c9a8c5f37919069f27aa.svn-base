@@ -1,0 +1,448 @@
+package cc.android.supu;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import cc.android.supu.tools.PageRequest;
+import cc.android.supu.tools.Tools;
+import cc.android.supu.tools.UserInfoTools;
+
+/**
+ * @author sss <br/>
+ *         对所有Activity进行一些初步的封装:<br/>
+ *         1.对所有Activity进行栈管理<br/>
+ *         2.对所有页面的顶部和底部进行统一的布局<br/>
+ *         3.对网络请求进行封装<br/>
+ */
+public abstract class BaseActivity extends Activity implements OnClickListener {
+	/** 请求失败码 */
+	static final int STATE_FAILURE = 312;
+	/** 请求成功码 */
+	static final int STATE_SUCCESS = 213;
+	/** 请求错误 */
+	static final int STATE_ERROR = 444;
+
+	private static final ExecutorService executorService = Executors.newFixedThreadPool(5);
+
+	private RelativeLayout bottomLayout;
+
+	protected ProgressDialog progressDialog = null;
+
+	protected TextView backLabel, titleLabel;
+	protected TextView enterLabel;
+	private LinearLayout middleLayout;
+	private TextView indexLabel, categoryLabel, shopcarLabel, vipLabel, moreLabel;
+
+	private boolean isExit = true;
+	protected boolean isBottom = false;
+
+	private int index;
+	/** 是否是第二级分类 */
+	protected boolean categoryHistory = false;
+
+	@Override
+	protected void onResume() {
+		isExit = true;
+		super.onResume();
+		clickBottomImage();
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		setContentView(R.layout.base);
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title);
+		SupuApplication.add(this);
+		middleLayout = (LinearLayout) findViewById(R.id.base_body_layout);
+		if (setLayout() > 0) {
+			LayoutParams LAYOUT_PARAMS = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			View view = LayoutInflater.from(this).inflate(setLayout(), null);
+			middleLayout.addView(view, LAYOUT_PARAMS);
+		}
+		initBaseView();
+		initPage();
+		initPageOperation();
+	}
+
+	/**
+	 * 初始化页面
+	 */
+	protected abstract void initPage();
+
+	private void clickBottomImage() {
+		switch (index) {
+		case 0:
+			indexLabel.setBackgroundResource(R.drawable.bottom_choosed);
+			indexLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.index_green);
+			break;
+		case 1:
+			categoryLabel.setBackgroundResource(R.drawable.bottom_choosed);
+			categoryLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.category_green);
+			break;
+		case 2:
+			shopcarLabel.setBackgroundResource(R.drawable.bottom_choosed);
+			shopcarLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.shopcar_green);
+			break;
+		case 3:
+			vipLabel.setBackgroundResource(R.drawable.bottom_choosed);
+			vipLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.vip_green);
+			break;
+		case 4:
+			moreLabel.setBackgroundResource(R.drawable.bottom_choosed);
+			moreLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.more_green);
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * @return 是否显示底部导航栏,true显示,false不显示
+	 */
+	protected boolean showBottom() {
+		return true;
+	}
+
+	private void initPageOperation() {
+		isExit = true;
+		if (showBottom()) {
+			bottomLayout.setVisibility(View.VISIBLE);
+		} else {
+			bottomLayout.setVisibility(View.GONE);
+		}
+		String title = setTitle();
+		if (!"".equals(title)) {
+			titleLabel.setText(title);
+			titleLabel.setBackgroundColor(Color.parseColor("#00000000"));
+			titleLabel.setVisibility(View.VISIBLE);
+		} else {
+			titleLabel.setVisibility(View.VISIBLE);
+		}
+		String back = setBackBtn();
+		if (!"".equals(back)) {
+			backLabel.setOnClickListener(this);
+			backLabel.setText(back);
+			backLabel.setVisibility(View.VISIBLE);
+		} else if (!"".equals(setBackIsNoBackBtn())) {
+			backLabel.setOnClickListener(this);
+			backLabel.setText(setBackIsNoBackBtn());
+			backLabel.setVisibility(View.VISIBLE);
+		}
+		String enter = setEnterBtn();
+		if (!"".equals(enter)) {
+			enterLabel.setOnClickListener(this);
+			enterLabel.setText(enter);
+			enterLabel.setVisibility(View.VISIBLE);
+		}
+		index = setBottomIndex();
+	}
+
+	/**
+	 * @return 设置布局文件
+	 */
+	abstract int setLayout();
+
+	/**
+	 * @return 设置选中的底部导航栏.0:首页;1:分类;2:购物车;3:会员中心;4:更多
+	 */
+	abstract int setBottomIndex();
+
+	/**
+	 * 初始化公共页面控件
+	 */
+	private void initBaseView() {
+		backLabel = (TextView) findViewById(R.id.base_back);
+		titleLabel = (TextView) findViewById(R.id.base_title);
+		enterLabel = (TextView) findViewById(R.id.base_enter);
+		bottomLayout = (RelativeLayout) findViewById(R.id.bottom_layout);
+		indexLabel = (TextView) findViewById(R.id.base_index_label);
+		indexLabel.setOnClickListener(this);
+		categoryLabel = (TextView) findViewById(R.id.base_category_label);
+		categoryLabel.setOnClickListener(this);
+		shopcarLabel = (TextView) findViewById(R.id.base_shopcar_label);
+		shopcarLabel.setOnClickListener(this);
+		vipLabel = (TextView) findViewById(R.id.base_vip_label);
+		vipLabel.setOnClickListener(this);
+		moreLabel = (TextView) findViewById(R.id.base_more_label);
+		moreLabel.setOnClickListener(this);
+	}
+
+	@Override
+	public void onClick(View view) {
+		Intent intent = null;
+		switch (view.getId()) {
+		case R.id.base_back:
+			backBtnOnClick();
+			break;
+		case R.id.base_enter:
+			enterBtnOnClick();
+			break;
+		case R.id.base_index_label:
+			if (index != 0) {
+				SupuApplication.delNotBottomActivity();
+				intent = new Intent(this, IndexActivity.class);
+				startActivity(intent);
+			}
+			break;
+		case R.id.base_category_label:
+			if (index == 1 && categoryHistory) {
+				onKeyDown(KeyEvent.KEYCODE_BACK, null);
+			} else if (index != 1) {
+				SupuApplication.delNotBottomActivity();
+				CategoryActivity.onClick = true;
+				intent = new Intent(this, CategoryActivity.class);
+				startActivity(intent);
+			}
+			break;
+		case R.id.base_vip_label:
+			if (index != 3) {
+				SupuApplication.delNotBottomActivity();
+				if (UserInfoTools.isLogin(this)) {
+					intent = new Intent(this, VipActivity.class);
+				} else {
+					intent = new Intent(this, LoginActivity.class);
+					intent.putExtra("shopcart", "");
+				}
+				startActivity(intent);
+			}
+			break;
+		case R.id.base_shopcar_label:
+			if (index != 2) {
+				SupuApplication.delNotBottomActivity();
+				intent = new Intent(this, ShopCarActivity.class);
+				startActivity(intent);
+			}
+			break;
+		case R.id.base_more_label:
+			if (index != 4) {
+				SupuApplication.delNotBottomActivity();
+				intent = new Intent(this, MoreActivity.class);
+				startActivity(intent);
+			}
+			break;
+		default:
+			onSubActivityClick(view);
+			break;
+		}
+
+	}
+
+	/**
+	 * @param view
+	 *            处理点击事件
+	 */
+	protected void onSubActivityClick(View view) {
+
+	}
+
+	/**
+	 * 返回按钮点击事件
+	 */
+	protected void backBtnOnClick() {
+		this.finish();
+	}
+
+	/**
+	 * 顶部右边按钮的点击触发函数
+	 */
+	protected void enterBtnOnClick() {
+
+	}
+
+	/**
+	 * @return 设置标题
+	 */
+	protected String setTitle() {
+		return "";
+	}
+
+	/**
+	 * @return 设置顶部左边返回按钮内容<br/>
+	 *         点击按钮后触发的函数({@link #backBtnOnClick()})
+	 */
+	protected String setBackBtn() {
+		return "";
+	}
+
+	/**
+	 * 设置顶部左边返回按钮内容，这里不是返回图标、而是右边的方形图标<br/>
+	 * 点击按钮后触发的函数({@link #backBtnOnClick()})
+	 * 
+	 * @return
+	 */
+	protected String setBackIsNoBackBtn() {
+		return "";
+	}
+
+	/**
+	 * @return 设置顶部右边按钮的内容<br/>
+	 *         点击后触发的函数({@link #enterBtnOnClick()})
+	 */
+	protected String setEnterBtn() {
+		return "";
+	}
+
+	@Override
+	protected void onDestroy() {
+		isExit = false;
+		// stopDownloadThread();
+		SupuApplication.removeActivity(this);
+		// AsyncImageLoader.clearCache();
+		super.onDestroy();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// 按下返回键
+		if (keyCode == KeyEvent.KEYCODE_BACK && event != null && event.getRepeatCount() == 0) {
+			// 判断是不是在首页
+			if (this.getClass() != SupuApplication.indexActivity) {
+				if (SupuApplication.isBottomActivity(this)) {
+					SupuApplication.backIndex(this);
+				} else {
+					return super.onKeyDown(keyCode, event);
+				}
+			} else {
+				showExitDialog();
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * 退出对话框
+	 */
+	private void showExitDialog() {
+		Dialog dialog = new AlertDialog.Builder(this).setMessage("您确定要退出?")
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						SupuApplication.exit();
+						finish();
+					}
+
+				}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+
+				}).create();
+		dialog.show();
+	}
+
+	protected Handler handler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			if (progressDialog != null)
+				progressDialog.cancel();
+			if (isExit) {
+				dealwithMessage(msg);
+			}
+		};
+	};
+
+	/**
+	 * @param msg
+	 *            消息处理函数
+	 */
+	protected void dealwithMessage(Message msg) {
+
+	}
+
+	/**
+	 * 请求服务器
+	 */
+	protected void requestServer(PageRequest pageRequest) {
+		requestServer(pageRequest, true);
+	}
+
+	/**
+	 * @param showDialog
+	 *            请求服务器，是否需要显示加载对话框
+	 */
+	protected void requestServer(final PageRequest pageRequest, boolean showDialog) {
+		if (!Tools.isAccessNetwork(this)) {
+			Tools.netError(this);
+			return;
+		} else {
+			if (showDialog) {
+				showProgressDialog();
+			}
+
+			executorService.submit(new Runnable() {
+
+				@Override
+				public void run() {
+					pageRequest.requestServer();
+				}
+			});
+		}
+	}
+
+	/**
+	 * 请求的接口,这里添加一个接口的目的是：如果一个界面中同时请求几次服务器，且每次请求的接口不一样时，会为每一次请求指定不同的方法。
+	 * 使线程与请求独立出来，不要求同步操作。
+	 */
+	protected PageRequest defaultPageRequest = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			defaultRequest();
+		}
+	};
+
+	/**
+	 * 默认请求方法，在不要求同步的情况下，默认的请求方法。这在另一个线程中调用，所以不要求开户新的线程。
+	 */
+	protected void defaultRequest() {
+	};
+
+	protected void showProgressDialog() {
+		if (!isExit)
+			return;
+		if (progressDialog != null) {
+			progressDialog.cancel();
+		}
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setIndeterminate(true);
+		progressDialog.setCancelable(true);
+		progressDialog.setMessage("正在加载,请稍候...");
+		progressDialog.show();
+	}
+
+	protected void showProgressDialog(String msg) {
+		if (!isExit)
+			return;
+		if (progressDialog != null) {
+			progressDialog.cancel();
+		}
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setIndeterminate(true);
+		progressDialog.setCancelable(true);
+		progressDialog.setMessage(msg);
+		progressDialog.show();
+	}
+
+}

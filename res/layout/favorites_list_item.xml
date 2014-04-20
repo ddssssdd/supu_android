@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@anim/noshapge_item_bg"
+    android:orientation="horizontal" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="5" >
+
+          <ImageView
+            android:id="@+id/GOODSImage"
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:layout_centerInParent="true"
+            android:padding="2dp"
+            android:paddingLeft="2dp"
+            android:src="@drawable/defalut_middle"
+            android:scaleType="fitCenter" />
+        
+           <ProgressBar
+            android:id="@+id/favorites_progressbar"
+            style="@android:style/Widget.ProgressBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" 
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.4" >
+
+        <TextView
+            android:id="@+id/GoodsName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dip"
+            android:paddingTop="5dip"
+            android:singleLine="true"
+            android:text="商品名称"
+            android:textColor="#000000"
+            android:paddingRight="30dip"
+            android:textSize="13dip" />
+
+        <TextView
+            android:id="@+id/GoodsSlogan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/GoodsName"
+            android:layout_marginLeft="0dip"
+            android:singleLine="true"
+            android:text="满300减40"
+            android:textColor="#FF0000"
+            android:paddingRight="30dip"
+            android:textSize="12dip" />
+
+        <TextView
+            android:id="@+id/CommentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dip"
+            android:paddingTop="55dip"
+            android:text="53"
+            android:textColor="#808080"
+            android:textSize="11dip" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#808080"
+            android:textSize="11dip" 
+            android:layout_marginTop="55dip"
+            android:text="人评价"
+            android:layout_toRightOf="@+id/CommentCount"
+            />
+
+        <cc.android.supu.view.DrawLineTextView
+            android:id="@+id/MarketPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="40dip"
+            android:layout_marginTop="40dip"
+            android:text=" ￥400"
+            android:textColor="#808080"
+            android:textSize="12dip" />
+		<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/MarketPrice"
+            android:layout_marginTop="40dip"
+            android:text=" 原价："
+            android:textColor="#808080"
+            android:textSize="12dip" />
+        <TextView
+            android:id="@+id/ShopPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/MarketPrice"
+            android:layout_marginRight="40dip"
+            android:text="￥400"
+            android:textColor="#FF0000"
+            android:textSize="12dip" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/MarketPrice"
+            android:layout_toLeftOf="@+id/ShopPrice"
+            android:text="现价："
+            android:textColor="#FF0000"
+            android:textSize="12dip" />
+
+        <ImageView
+            android:id="@+id/favorites_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="20dip"
+            android:src="@drawable/usercenter_arrow" />
+        
+        <TextView
+            android:id="@+id/favorites_delete"
+            android:background="@anim/rectangle_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:text="删除"
+            android:layout_marginRight="40dip"
+            android:textColor="#ffffff"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

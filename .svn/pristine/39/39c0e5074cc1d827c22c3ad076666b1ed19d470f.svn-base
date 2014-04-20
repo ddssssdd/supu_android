@@ -1,0 +1,26 @@
+package cc.android.supu.handler;
+
+import org.json.JSONObject;
+
+/**
+ * 获取银联订单信息解析器
+ * @author sheng
+ *
+ */
+public class UPPayDataHandler extends DefaultJSONData {
+	
+	/** 银联订单信息*/
+	public String UPPayData = "";
+	/** 支付宝手机支付安全控件数据*/
+	public String AliPayData = "";
+	
+	@Override
+	public void parse(JSONObject object) {
+		// TODO Auto-generated method stub
+		JSONObject data = object.optJSONObject("Data");
+		if(data != null){
+			UPPayData = data.optString("UPPayData", "");
+			AliPayData = data.optString("AliPayData", "");
+		}
+	}
+}

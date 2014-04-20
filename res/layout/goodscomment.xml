@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+    <ListView 
+        android:id="@+id/goodscomment_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/goodscomment_bottomLayout"
+        android:cacheColorHint="#00000000"
+        android:divider="#828282"
+        android:dividerHeight="0.1dip"
+        android:listSelector="#00000000"/>
+	
+    <TextView 
+        android:id="@+id/goodscomment_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:text="抱歉，此商品还未被评论过。"
+        android:visibility="gone"/>
+    
+    <LinearLayout 
+        android:id="@+id/goodscomment_bottomLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="15dip"
+        android:paddingRight="15dip"
+        android:gravity="center_vertical"
+      	android:orientation="horizontal"
+      	android:background="#BBBBBB"
+      	android:visibility="gone">
+        
+        <ProgressBar 
+            android:id="@+id/goodscomment_progressBar"
+            style="@android:style/Widget.ProgressBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dip"/>
+        
+        <TextView 
+            android:id="@+id/goodscomment_loadtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:text="请耐心等待，我们正在努力加载数据......"
+            />
+        
+    </LinearLayout>
+</RelativeLayout>

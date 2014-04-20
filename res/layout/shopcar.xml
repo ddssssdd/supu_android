@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/shopcar_bottom_layout">
+        
+        <ListView 
+	        android:id="@+id/shopcar_listview"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:cacheColorHint="#00000000"
+	        android:listSelector="#00000000"
+	        android:divider="#000000"
+	        android:dividerHeight="1dip"/>
+        
+        <LinearLayout 
+            android:id="@+id/shopcart_noproductLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:visibility="gone">
+            
+            <TextView 
+                android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"
+            	android:layout_gravity="center_horizontal"
+            	android:text="您的购物车是空的，快去行动吧"
+            	android:textColor="@color/red"/>
+            
+            <ImageView 
+	            android:id="@+id/shopcar_noproduct"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:src="@drawable/shopcart_noproduct"/>
+            
+        </LinearLayout>
+     
+    </RelativeLayout>
+   
+    
+    <RelativeLayout 
+        android:id="@+id/shopcar_bottom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shopcar_bottom"
+        android:gravity="center_vertical"
+        android:visibility="invisible">
+        
+        <TextView 
+            android:id="@+id/subtotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dip"
+            android:gravity="left"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:text="@string/shopcar_subtotal"/>
+        
+        <TextView 
+            android:id="@+id/shopcar_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/subtotal"
+            android:gravity="left"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:text="@string/shopcar_count"/>
+        
+        <TextView 
+            android:id="@+id/shopcar_SumAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/shopcar_count"
+            android:layout_toLeftOf="@+id/discountAmount"
+            android:gravity="left"
+            android:textColor="#D70610"
+            />
+        
+        <TextView 
+            android:id="@+id/discountAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/shopcar_discountAmount"
+            android:gravity="right"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:text="@string/shopcar_discountAmount"/>
+        
+        <TextView 
+            android:id="@+id/shopcar_discountAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dip"
+            android:layout_alignParentRight="true"
+         	android:gravity="left"
+            android:textColor="#D70610"
+            android:textSize="12sp"
+            />
+    </RelativeLayout>
+    
+    <LinearLayout 
+        android:id="@+id/shopcart_loadLayout"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:background="#FFFFFF"
+    	android:gravity="center"
+    	android:orientation="horizontal">
+        
+        <ProgressBar 
+            android:id="@+id/shopcart_progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.ProgressBar.Inverse"/>
+        
+        <TextView 
+            android:id="@+id/shopcart_loadText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dip"
+            android:text="正在加载购物车...."/>
+        
+        
+    </LinearLayout>
+
+</RelativeLayout>

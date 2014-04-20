@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:id="@+id/buttonLayout"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/salevolume_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/partion_btn_normal" >
+
+            <TextView
+                android:id="@+id/salevolume_label"
+                style="@style/search_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="销量"
+                android:textColor="#FFFFFF" />
+
+            <ImageView
+                android:id="@+id/salevolume_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/price_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/partion_btn_toching" >
+
+            <TextView
+                android:id="@+id/price_label"
+                style="@style/search_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="价格" />
+
+            <ImageView
+                android:id="@+id/price_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/evaluate_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/partion_btn_toching" >
+
+            <TextView
+                android:id="@+id/evaluate_label"
+                style="@style/search_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="评价" />
+
+            <ImageView
+                android:id="@+id/evaluate_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/nolist"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="没有搜索到商品"
+        android:layout_marginTop="50dp"
+        android:visibility="gone"
+        android:textColor="#969696"
+        android:textSize="16sp"
+         />
+
+    <ListView
+        android:layout_below="@id/buttonLayout"
+        android:id="@+id/activity_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#00000000"
+        android:divider="@drawable/point"
+        android:dividerHeight="2dp"
+        android:listSelector="#00000000" />
+
+</RelativeLayout>

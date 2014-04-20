@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="15dip"
+    android:paddingTop="10dip"
+    android:paddingRight="15dip"
+    android:paddingBottom="10dip"
+    android:orientation="vertical" >
+    
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <TextView 
+            android:id="@+id/goodscomment_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:text="qianxin"/>
+        
+        <TextView 
+            android:id="@+id/level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/goodscomment_star_levelImg"
+            android:layout_toRightOf="@+id/goodscomment_account"
+            android:layout_alignBaseline="@+id/goodscomment_star_levelImg"
+            android:gravity="right"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:text="等级："/>
+    	
+        <ImageView 
+            android:id="@+id/goodscomment_star_levelImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+        
+    </RelativeLayout>
+    
+    <TextView 
+        android:id="@+id/goodscomment_commentContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:text="第二次购买，还不错"/>
+    
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip">
+        
+        <TextView 
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:text="评分："/>
+        
+        <ImageView 
+            android:id="@+id/goodscomment_score1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@+id/score"
+            android:layout_centerVertical="true"
+            android:src="@drawable/heart_grey_small"/>
+        
+        <ImageView 
+            android:id="@+id/goodscomment_score2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@+id/goodscomment_score1"
+            android:layout_alignBaseline="@+id/goodscomment_score1"
+            android:layout_centerVertical="true"
+            android:src="@drawable/heart_grey_small"/>
+        
+        <ImageView 
+            android:id="@+id/goodscomment_score3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@+id/goodscomment_score2"
+            android:layout_alignBaseline="@+id/goodscomment_score2"
+            android:layout_centerVertical="true"
+            android:src="@drawable/heart_grey_small"/>
+        
+        <ImageView 
+            android:id="@+id/goodscomment_score4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@+id/goodscomment_score3"
+            android:layout_alignBaseline="@+id/goodscomment_score3"
+            android:layout_centerVertical="true"
+            android:src="@drawable/heart_grey_small"/>
+        
+        <ImageView 
+            android:id="@+id/goodscomment_score5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@+id/goodscomment_score4"
+            android:layout_alignBaseline="@+id/goodscomment_score4"
+            android:layout_centerVertical="true"
+            android:src="@drawable/heart_grey_small"/>
+        
+    
+        <TextView 
+            android:id="@+id/goodscomment_commentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignBaseline="@+id/score"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:text="2012-5-16"/>
+    </RelativeLayout>
+
+</LinearLayout>

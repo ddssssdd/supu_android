@@ -1,0 +1,473 @@
+package cc.android.supu;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import com.google.zxing.client.android.BarCode;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.ScrollView;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.Gallery;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+import cc.android.supu.adapter.IndexGalleryAdapter;
+import cc.android.supu.adapter.IndexProductAdapter;
+import cc.android.supu.bean.IndexGoodBean;
+import cc.android.supu.bean.IndexPicBean;
+import cc.android.supu.handler.IndexGalleryHandler;
+import cc.android.supu.handler.IndexGoodsHandler;
+import cc.android.supu.tools.ConstantUrl;
+import cc.android.supu.tools.PageRequest;
+import cc.android.supu.tools.Tools;
+import cc.android.supu.tools.UserInfoTools;
+import cc.android.supu.view.FllingGallery;
+
+/**
+ * @author sss 首页
+ */
+public class IndexActivity extends BaseActivity {
+	/** 获取首页Gallery图片成功 */
+	private final static int GALLERY_SUCCESS = 123;
+	/** 获取首页Gallery图片失敗 */
+	private final static int GALLERY_FAIL = 433;
+	/** 获取首页Gallery图片錯誤 */
+	private final static int GALLERY_ERROR = 343;
+	/** 获取首页Gallery图片成功 */
+	private final static int GOODS_SUCCESS = 543;
+	/** 获取首页Gallery图片失敗 */
+	private final static int GOODS_FAIL = 453;
+	/** 获取首页Gallery图片錯誤 */
+	private final static int GOODS_ERROR = 563;
+
+	/** 登录请求码 */
+	private final static int REQUEST_LOGIN = 125;
+	/** 二级码请求码 */
+	private final static int REQUEST_BARCODE = 325;
+	/** 解析Gallery图片的解析类 */
+	private IndexGalleryHandler galleryHandler;
+	/** 解析下面商品的解析类 */
+	private IndexGoodsHandler goodsHandler;
+	// private boolean imgIsChage = false;
+
+	private FllingGallery topGallery;
+	/** 顶部Gallery内容 */
+	private ArrayList<IndexPicBean> picBeans;
+	private IndexGalleryAdapter galleryAdapter;
+	private ImageView pointLabel;
+	private Bitmap pointBitmap;
+	private int gallerySize;
+
+	/** 所有商品列表控件 */
+	private ExpandableListView productListView;
+	private IndexProductAdapter productAdapter;
+	private LinkedHashMap<String, ArrayList<IndexGoodBean>> categoryGoods;
+
+	private EditText searchLabel;
+	private ImageButton searchBtn;
+
+	private ImageView greedBtn;
+
+	/** Gallery加载是否成功 没有加载成功则重新加载 */
+	private boolean gallerySuccess = false;
+	/** 列表加载是否成功 没有加载成功则重新加载 */
+	private boolean listSuccess = false;
+	/** 是否是一维码扫描 */
+	private boolean isBarcode = false;
+
+	private ScrollView indexScroll;
+
+	@Override
+	int setLayout() {
+		return R.layout.index;
+	}
+
+	@Override
+	protected String setEnterBtn() {
+		return "注册/登录";
+	}
+
+	@Override
+	protected void onSubActivityClick(View view) {
+		Intent intent;
+		switch (view.getId()) {
+		case R.id.search_btn:
+			String key = searchLabel.getText().toString();
+			if (!"".equals(key.trim())) {
+				intent = new Intent(this, SearchResult.class);
+				intent.putExtra("key", key);
+				intent.putExtra("barcode", isBarcode);
+				startActivity(intent);
+			} else {
+				Toast.makeText(this, "请输入搜索内容!", Toast.LENGTH_LONG).show();
+			}
+			break;
+		case R.id.baby_btn:
+			intent = new Intent(this, GreedActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.barcode_btn:
+			intent = new Intent(this, CaptureActivity.class);
+			startActivityForResult(intent, REQUEST_BARCODE);
+		default:
+			break;
+		}
+	}
+
+	@Override
+	protected void enterBtnOnClick() {
+		Intent intent = new Intent(this, LoginActivity.class);
+		startActivityForResult(intent, REQUEST_LOGIN);
+	}
+
+	@Override
+	protected void initPage() {
+		gallerySuccess = false;
+		listSuccess = false;
+		indexScroll = (ScrollView) findViewById(R.id.indexscroll);
+		topGallery = (FllingGallery) findViewById(R.id.index_gallery);
+		picBeans = new ArrayList<IndexPicBean>();
+		galleryAdapter = new IndexGalleryAdapter(this, picBeans);
+		topGallery.setAdapter(galleryAdapter);
+		pointLabel = (ImageView) findViewById(R.id.index_points);
+		topGallery.setOnItemSelectedListener(topItemSelectedListener);
+		topGallery.setOnItemClickListener(galleryItemClickListener);
+		/** 二维码扫描 */
+		findViewById(R.id.barcode_btn).setOnClickListener(this);
+
+		productListView = (ExpandableListView) findViewById(R.id.indexproductgoods);
+		productListView.setOnGroupClickListener(groupClickListener);
+
+		greedBtn = (ImageView) findViewById(R.id.baby_btn);
+		greedBtn.setOnClickListener(this);
+
+		searchLabel = (EditText) findViewById(R.id.search_key);
+		searchLabel.setOnEditorActionListener(editorActionListener);
+		searchLabel.addTextChangedListener(watcher);
+		searchBtn = (ImageButton) findViewById(R.id.search_btn);
+		searchBtn.setOnClickListener(this);
+
+		// imgIsChage = UserInfoTools.getImage(this);
+		/** 请求顶部Gallery中的数据 */
+		// requestServer(defaultPageRequest);
+		// requestServer(topGoodsRequest, false);
+
+	}
+
+	@Override
+	protected void onStart() {
+		if (this.getCurrentFocus() != null) {// 隐藏软键盘
+			this.getCurrentFocus().findFocus().clearFocus();
+			searchLabel.requestFocus();
+		}
+		indexScroll.scrollTo(0, 0);
+		super.onStart();
+	}
+
+	@Override
+	protected void onResume() {
+
+		if (UserInfoTools.isLogin(this)) {
+			enterLabel.setVisibility(View.GONE);
+		} else {
+			enterLabel.setVisibility(View.VISIBLE);
+		}
+
+		if (BarCode.hasBarCode) {
+			BarCode.hasBarCode = false;
+			isBarcode = true;
+			// System.out.println("BarCode.barcode:" + BarCode.barcode);
+			// searchLabel.setText(BarCode.barcode);
+			// BarCode.barcode = null;
+
+			Intent intent = new Intent(this, SearchResult.class);
+			intent.putExtra("key", BarCode.barcode);
+			intent.putExtra("barcode", isBarcode);
+			startActivity(intent);
+		}
+		// boolean showImage = UserInfoTools.getImage(this);
+		if (!gallerySuccess) {
+			galleryHandler = new IndexGalleryHandler();
+			requestServer(defaultPageRequest);
+		}
+		if (!listSuccess) {
+			goodsHandler = new IndexGoodsHandler();
+			requestServer(topGoodsRequest, false);
+		}
+		super.onResume();
+	}
+
+	Timer timer = new Timer();
+	private int position = 0;
+	private boolean flling = false;
+	private boolean isFling = false;
+
+	private void galleryLooper() {
+
+		TimerTask task = new TimerTask() {
+
+			@Override
+			public void run() {
+				if ((position + 1) < gallerySize) {
+					position++;
+				} else {
+					position = 0;
+				}
+				if (!flling) {
+					isFling = true;
+					Message message = Message.obtain();
+					message.what = 5;
+					message.arg1 = position;
+					handler.sendMessage(message);
+				} else {
+					flling = false;
+				}
+
+				galleryLooper();
+			}
+		};
+		timer.schedule(task, 5000);
+
+	}
+
+	@Override
+	protected void dealwithMessage(Message msg) {
+		switch (msg.what) {
+		case GALLERY_SUCCESS:
+			picBeans.clear();
+			picBeans.addAll(galleryHandler.getPicBeans());
+			gallerySize = picBeans.size();
+			galleryAdapter.notifyDataSetChanged();
+			pointBitmap = drawPoint(gallerySize, 0);
+			pointLabel.setImageBitmap(pointBitmap);
+			gallerySuccess = true;
+			position = 0;
+			galleryLooper();
+			break;
+		case GALLERY_FAIL:
+
+			break;
+		case GALLERY_ERROR:
+
+			break;
+		case GOODS_SUCCESS:
+			categoryGoods = goodsHandler.getCategoryGoods();
+			productAdapter = new IndexProductAdapter(this, categoryGoods);
+			productListView.setAdapter(productAdapter);
+			for (int i = 0; i < categoryGoods.size(); i++) {
+				productListView.expandGroup(i);
+			}
+			listSuccess = true;
+			break;
+		case GOODS_FAIL:
+			break;
+		case GOODS_ERROR:
+			break;
+		case 5:
+			int pos = msg.arg1;
+			topGallery.setSelection(pos, true);
+			isFling = false;
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	protected void defaultRequest() {
+		Tools.requestToParse(this, ConstantUrl.GETPICLIST, "GetPicList", null, galleryHandler, false);
+		if (Tools.responseValue == 1) {
+			handler.sendEmptyMessage(GALLERY_SUCCESS);
+		} else if (Tools.responseValue == 2) {
+			handler.sendEmptyMessage(GALLERY_FAIL);
+		} else {
+			handler.sendEmptyMessage(GALLERY_ERROR);
+		}
+	}
+
+	/**
+	 * 获取促销商品的请求
+	 */
+	protected PageRequest topGoodsRequest = new PageRequest() {
+
+		@Override
+		public void requestServer() {
+			Tools.requestToParse(IndexActivity.this, ConstantUrl.GETINDEXTOPGOODS, "GetIndexTopGoods", null,
+					goodsHandler, false);
+			if (Tools.responseValue == 1) {
+				handler.sendEmptyMessage(GOODS_SUCCESS);
+			} else if (Tools.responseValue == 2) {
+				handler.sendEmptyMessage(GOODS_FAIL);
+			} else {
+				handler.sendEmptyMessage(GOODS_ERROR);
+			}
+		}
+	};
+
+	@Override
+	int setBottomIndex() {
+		return 0;
+	}
+
+	private OnItemSelectedListener topItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+			pointBitmap = drawPoint(gallerySize, position);
+			pointLabel.setImageBitmap(pointBitmap);
+			IndexActivity.this.position = position;
+			if (!isFling) {
+				if (timer != null) {
+					timer.cancel();
+				}
+				timer = new Timer();
+				galleryLooper();
+			}
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> parent) {
+		}
+	};
+
+	/**
+	 * 绘制图片点
+	 */
+	public Bitmap drawPoint(int num, int position) {
+		if (pointBitmap != null)
+			pointBitmap.recycle();
+		if (num <= 0) {// 加上判断，有时再颜色频繁切换时，会出现异常
+			num = 1;
+		}
+		Bitmap normal = ((BitmapDrawable) getResources().getDrawable(R.drawable.point_gray)).getBitmap();
+		Bitmap select = ((BitmapDrawable) getResources().getDrawable(R.drawable.point_red)).getBitmap();
+		int width = normal.getWidth() + 10;
+		int height = normal.getHeight();
+		Bitmap bitmap = Bitmap.createBitmap(num * width, height, Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		int x = 0;
+		for (int i = 0; i < num; i++) {
+			if (i == position) {
+				canvas.drawBitmap(select, x, 0, null);
+			} else {
+				canvas.drawBitmap(normal, x, 0, null);
+			}
+			x += width;
+		}
+		return bitmap;
+	}
+
+	/** 点击不关闭子ListView */
+	private OnGroupClickListener groupClickListener = new OnGroupClickListener() {
+
+		@Override
+		public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+			return true;
+		}
+	};
+	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
+
+		@Override
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			String key = searchLabel.getText().toString();
+			// System.out.println(actionId + "  KK:");
+			if (!"".equals(key.trim())) {
+				if (IndexActivity.this.getCurrentFocus() != null) {// 隐藏软键盘
+					((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(
+							IndexActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+				}
+				Intent intent = new Intent(IndexActivity.this, SearchResult.class);
+				intent.putExtra("key", key);
+				intent.putExtra("search", true);
+				startActivity(intent);
+			} else {
+				if (IndexActivity.this.getCurrentFocus() != null) {
+					// IndexActivity.this.getCurrentFocus().findFocus().clearFocus();
+					// searchLabel.requestFocusFromTouch();//当点击搜索键后焦点就聚焦到searchLabel
+					indexScroll.fling(0);
+				}
+				Toast.makeText(IndexActivity.this, "请输入搜索内容!", Toast.LENGTH_LONG).show();
+			}
+			return true;
+		}
+	};
+
+	private TextWatcher watcher = new TextWatcher() {
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			String ss = searchLabel.getText().toString();
+			if (ss == null || !ss.equals(BarCode.barcode)) {
+				isBarcode = false;
+			} else {
+				isBarcode = true;
+			}
+
+		}
+	};
+	private OnItemClickListener galleryItemClickListener = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			IndexPicBean picBean = picBeans.get(position);
+			Intent intent = null;
+			if ("Product".equals(picBean.linkType)) {
+				intent = new Intent(IndexActivity.this, GoodsDetailsActivity.class);
+				intent.putExtra("goodsSN", picBean.linkData);
+				// intent.putExtra("imgFile", picBean.picUrl);
+			} else if ("List".equals(picBean.linkType)) {
+				intent = new Intent(IndexActivity.this, SearchResult.class);
+				int separatorIndex = picBean.linkData.indexOf('-');
+				String categoryId = picBean.linkData.substring(0, separatorIndex);
+				String brandId = picBean.linkData.substring(separatorIndex + 1, picBean.linkData.length());
+				if (!"0".equals(categoryId)) {
+					intent.putExtra("categoryId", categoryId);
+				}
+				if (!"0".equals(brandId)) {
+					intent.putExtra("brandId", brandId);
+				}
+			} else if ("Search".equals(picBean.linkType)) {
+				intent = new Intent(IndexActivity.this, SearchResult.class);
+				intent.putExtra("search", true);
+				intent.putExtra("key", picBean.linkData);
+			} else {
+				intent = new Intent(IndexActivity.this, ActivityTitle.class);
+				intent.putExtra("linkdata", picBean.linkData);
+			}
+
+			IndexActivity.this.startActivity(intent);
+
+		}
+	};
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@anim/noshapge_item_bg"
+    android:orientation="horizontal" 
+    android:paddingBottom="2.9dip"
+    >
+          <ImageView
+            android:id="@+id/recentViewImage"
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:layout_alignParentLeft="true"
+            android:padding="2dp"
+            android:src="@drawable/defalut_middle"
+            android:layout_marginRight="10dip"
+            android:layout_marginLeft="10dp"
+            android:scaleType="fitCenter"
+             />
+        
+           <ProgressBar
+            android:id="@+id/recentViewprogressbar"
+            style="@android:style/Widget.ProgressBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+             android:layout_marginLeft="30dp"
+             android:layout_marginTop="30dip"
+             android:visibility="gone"
+            />
+			<TextView
+			    android:id="@+id/recentViewName"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:text="商品名字"
+			    android:singleLine="true"
+			    android:textColor="#000000"
+			    android:textSize="14dip"
+			    android:paddingRight="25dip"
+			    android:layout_toRightOf="@+id/recentViewImage"
+			    android:layout_marginTop="5dip"
+			    />
+			<TextView
+			    android:id="@+id/recentViewShop"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:text="255"
+			    android:textColor="#ff0000"
+			    android:textSize="14dip"
+			    android:layout_alignParentRight="true"
+			    android:paddingRight="40dip"
+			    android:layout_marginTop="45dip"
+			    />
+		
+           <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="20dip"
+            android:src="@drawable/usercenter_arrow" />
+</RelativeLayout>

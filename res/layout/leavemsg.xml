@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="10dip"
+    android:paddingTop="15dip"
+    android:paddingRight="10dip"
+    android:paddingBottom="20dip"
+    android:orientation="vertical" >
+    
+    <EditText 
+        android:id="@+id/leavemsg_content"
+        android:layout_width="fill_parent"
+        android:layout_height="150dip"
+        android:background="@anim/shape_ticketinfo_layout_bg"
+        android:lineSpacingExtra="3dip"
+        android:gravity="top|left"
+        android:maxLength="200"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textColorHint="#9C9D9F"
+        android:hint="请填写留言信息"/>
+    
+    <TextView 
+        android:id="@+id/leavemsg_promptTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="5dip"
+        android:layout_gravity="right"
+        android:textColor="#9C9D9F"
+        android:textSize="14sp"
+        android:text="您还可以输入200字"/>
+</LinearLayout>

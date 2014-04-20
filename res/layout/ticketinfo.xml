@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+    <ScrollView 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    
+	    <LinearLayout 
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="20dip"
+	        android:layout_marginLeft="10dip"
+	        android:layout_marginRight="10dip"
+	        android:layout_gravity="center_horizontal"
+	        android:background="@anim/shape_ticketinfo_layout_bg"
+	        android:orientation="vertical">
+	        
+	        <LinearLayout 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal">
+	            
+		        <TextView 
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/ticketinfo_name"/>
+		        
+		        <TextView 
+		            android:id="@+id/ticketinfo_name"
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:singleLine="true"
+		            />
+		        
+	        </LinearLayout>
+	        
+	        <LinearLayout 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="5dip"
+	            android:orientation="horizontal">
+	            
+		        <TextView 
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/ticketinfo_ticketNo"/>
+		        
+		        <TextView 
+		            android:id="@+id/ticketinfo_ticketNo"
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:singleLine="true"
+		            />
+		        
+	        </LinearLayout>
+	        
+	        <LinearLayout 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="5dip"
+	            android:orientation="horizontal">
+	            
+		        <TextView 
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="left|top"
+		            android:text="@string/ticketinfo_describe"/>
+		        
+		        <TextView 
+		            android:id="@+id/ticketinfo_describe"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:textColor="#000000"
+		            android:textSize="14sp"
+		            />
+		        
+	        </LinearLayout>
+	        
+	        <LinearLayout 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="5dip"
+	            android:orientation="horizontal">
+	            
+		        <TextView 
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/ticketinfo_beginTime"/>
+		        
+		        <TextView 
+		            android:id="@+id/ticketinfo_beginTime"
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:singleLine="true"
+		            />
+		        
+	        </LinearLayout>
+	        
+	        <LinearLayout 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="5dip"
+	            android:orientation="horizontal">
+	            
+		        <TextView 
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/ticketinfo_endTime"/>
+		        
+		        <TextView 
+		            android:id="@+id/ticketinfo_endTime"
+		            style="@style/ticketlist_item_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:singleLine="true"
+		            />
+		        
+	        </LinearLayout>
+	        
+	    </LinearLayout>
+	</ScrollView>
+</LinearLayout>

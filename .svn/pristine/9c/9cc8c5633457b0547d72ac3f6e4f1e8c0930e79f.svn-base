@@ -1,0 +1,661 @@
+package cc.android.supu.tools;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import cc.android.supu.handler.DefaultJSONData;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Environment;
+import android.os.StatFs;
+import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
+import android.util.Log;
+
+/**
+ * @author AW
+ * 
+ */
+public class Tools {
+	/** 1代表正常0代表其它错误2代表服务端相应错误，3代表解析错误 */
+	public static int responseValue;//
+	private static final char HEX_DIGITS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
+			'e', 'f' };
+
+	/**
+	 * POST请求并解析返回的JSON
+	 * 
+	 * @param isSave
+	 *            是否保存在SD
+	 */
+	public static String requestToParse(Context context, String url, String method, TreeMap<String, String> data,
+			DefaultJSONData jsonData, boolean isSave) {
+		responseValue = 0;
+		// 公共参数
+		// data = setPublicParams(context, data);
+		if (data == null)
+			data = new TreeMap<String, String>();
+
+		HttpPost httpPost = new HttpPost(url);
+		httpPost.addHeader("charset", HTTP.UTF_8);
+
+		String memberId = "";
+		try {
+			memberId = URLEncoder.encode(PublicParams.getMemberId(), HTTP.UTF_8);
+			// System.out.println("memberId:" + PublicParams.getMemberId() +
+			// "  " + memberId);
+			// System.out.println("Platform:" + PublicParams.getPlatform() +
+			// "  " + memberId);
+			// System.out.println("Udid:" + PublicParams.getUdid(context) + "  "
+			// + URLEncoder.encode(PublicParams.getUdid(context), HTTP.UTF_8));
+			// System.out.println("PhoneModel:" + PublicParams.getPhoneModel() +
+			// "  "
+			// + URLEncoder.encode(PublicParams.getPhoneModel(), HTTP.UTF_8));
+			// System.out.println("Imsi:" + PublicParams.getImsi(context) + "  "
+			// + URLEncoder.encode(PublicParams.getImsi(context), HTTP.UTF_8));
+			// System.out.println("Imei:" + PublicParams.getImei(context) + "  "
+			// + URLEncoder.encode(PublicParams.getImei(context), HTTP.UTF_8));
+//			System.out.println("Source:" + PublicParams.getSource() + "  "
+//					+ URLEncoder.encode(PublicParams.getSource(), HTTP.UTF_8));
+			// System.out.println("Language:" + PublicParams.getLanguage() +
+			// "  "
+			// + URLEncoder.encode(PublicParams.getLanguage(), HTTP.UTF_8));
+			// System.out.println("Operator:" +
+			// PublicParams.getOperator(context) + "  "
+			// + URLEncoder.encode(PublicParams.getOperator(context),
+			// HTTP.UTF_8));
+			// System.out.println("SmsNumber:" + PublicParams.getSmsNumber() +
+			// "  "
+			// + URLEncoder.encode(PublicParams.getSmsNumber(), HTTP.UTF_8));
+//			 System.out.println("ScreenSize:" +
+//			 PublicParams.getScreenSize(context) + "  "
+//			 + URLEncoder.encode(PublicParams.getScreenSize(context),
+//			 HTTP.UTF_8));
+			// System.out.println("ApiVersion:" + PublicParams.getAppVersion() +
+			// "  "
+			// + URLEncoder.encode(PublicParams.getAppVersion(), HTTP.UTF_8));
+			// System.out.println("ClientVersion:" +
+			// PublicParams.getClientVersion() + "  "
+			// + URLEncoder.encode(PublicParams.getClientVersion(),
+			// HTTP.UTF_8));
+			httpPost.addHeader("MemberId", memberId);
+			httpPost.addHeader("Platform", URLEncoder.encode(PublicParams.getPlatform(), HTTP.UTF_8));
+			httpPost.addHeader("Udid", URLEncoder.encode(PublicParams.getUdid(context), HTTP.UTF_8));
+			httpPost.addHeader("PhoneModel", URLEncoder.encode(PublicParams.getPhoneModel(), HTTP.UTF_8));
+			httpPost.addHeader("Imsi", URLEncoder.encode(PublicParams.getImsi(context), HTTP.UTF_8));
+			httpPost.addHeader("Imei", URLEncoder.encode(PublicParams.getImei(context), HTTP.UTF_8));
+			httpPost.addHeader("Source", URLEncoder.encode(PublicParams.getSource(), HTTP.UTF_8));
+			httpPost.addHeader("Language", URLEncoder.encode(PublicParams.getLanguage(), HTTP.UTF_8));
+			httpPost.addHeader("Operator", URLEncoder.encode(PublicParams.getOperator(context), HTTP.UTF_8));
+			httpPost.addHeader("SmsNumber", URLEncoder.encode(PublicParams.getSmsNumber(), HTTP.UTF_8));
+			httpPost.addHeader("ScreenSize", URLEncoder.encode(PublicParams.getScreenSize(context), HTTP.UTF_8));
+			httpPost.addHeader("ApiVersion", URLEncoder.encode(PublicParams.getAppVersion(), HTTP.UTF_8));
+			httpPost.addHeader("ClientVersion", URLEncoder.encode(PublicParams.getClientVersion(), HTTP.UTF_8));
+		} catch (Exception encodingException) {
+			encodingException.printStackTrace();
+		}
+
+		String md5 = md5(method.trim() + memberId + Constant.TOKEN);
+		data.put("sign", md5.toUpperCase());
+		// System.out.println("sign:" + md5.toUpperCase());
+		// data.put("sign", "x4me%2Bn98pAlMrZc3Ik8rcg%3D%3D");
+		ArrayList<BasicNameValuePair> postData = new ArrayList<BasicNameValuePair>();
+		for (Map.Entry<String, String> m : data.entrySet()) {
+			Log.e("m.getKey()", m.getKey() + " " + m.getValue());
+			postData.add(new BasicNameValuePair(m.getKey(), m.getValue()));
+		}
+
+		BasicHttpParams httpParams = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
+		HttpConnectionParams.setSoTimeout(httpParams, 0);
+		HttpClient httpClient = new DefaultHttpClient(httpParams);
+
+		HttpResponse response = null;
+		try {
+			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postData, HTTP.UTF_8);
+			httpPost.setEntity(entity);
+
+			Log.i("99", "connect");
+			response = httpClient.execute(httpPost);
+			Log.i("99", "end connect");
+			Log.e("statu", response.getStatusLine().getStatusCode() + "");
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				responseValue = 1;
+			} else {
+				responseValue = 2;
+				httpPost.abort();
+			}
+
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			responseValue = 2;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			responseValue = 2;
+		} catch (IOException e) {
+			e.printStackTrace();
+			responseValue = 2;
+		}
+
+		// 响应正常
+		if (responseValue != 2) {
+			try {
+				HttpEntity entity = response.getEntity();
+				String buffData = EntityUtils.toString(entity, HTTP.UTF_8).trim();
+				if (isSave) {
+					// Log.i("111",
+					// EntityUtils.toString(response.getEntity(),HTTP.UTF_8));
+					// HttpEntity httpEntity = response.getEntity();
+					// InputStream inputStream = httpEntity.getContent();
+					// StringBuffer buff = new StringBuffer();
+					// BufferedReader reader = new BufferedReader(
+					// new InputStreamReader(inputStream));
+					// String temp = null;
+					// while ((temp = reader.readLine()) != null) {
+					// buff.append(temp);
+					// }
+					saveJsonToSDCard(buffData);
+				}
+
+				Log.e("buffData", buffData);
+
+				if (buffData.startsWith("{") && jsonData != null) {
+					JSONObject object = new JSONObject(buffData);
+					jsonData.parseJsonObject(object);
+				} else if (buffData.startsWith("[") && jsonData != null) {
+					JSONArray object = new JSONArray(buffData);
+					jsonData.parse(object);
+				} else {
+					return buffData;
+				}
+
+				responseValue = 1;// 解析成功
+			} catch (Exception e) {
+				e.printStackTrace();
+				responseValue = 3;
+			}
+		}
+		return "";
+	}
+
+	/**
+	 * GET请求并解析返回的JSON
+	 */
+	public static DefaultJSONData requestToParse(Context context, String url, DefaultJSONData jsonData) {
+		responseValue = 0;
+		// settings = context.getSharedPreferences(Constant.USER, 0);
+		HttpGet httpGet = new HttpGet(url);
+
+		HttpClient httpClient = new DefaultHttpClient(/* httpParams */);
+		HttpResponse response = null;
+
+		try {
+			// Log.i("99", "connect");
+			response = httpClient.execute(httpGet);
+			// Log.i("99", "end connect");
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				responseValue = 1;
+			} else {
+				responseValue = 2;
+				httpGet.abort();
+			}
+
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			responseValue = 2;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			responseValue = 2;
+		} catch (IOException e) {
+			e.printStackTrace();
+			responseValue = 2;
+		}
+
+		// 响应正常
+		if (responseValue != 2) {
+			try {
+				HttpEntity httpEntity = response.getEntity();
+				InputStream inputStream = httpEntity.getContent();
+				StringBuffer buff = new StringBuffer();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+				String temp = null;
+				while ((temp = reader.readLine()) != null) {
+					buff.append(temp);
+				}
+				Log.i("Get请求返回数据：：", buff.toString());
+//				System.out.println("Get请求返回数据：：" + buff.toString());
+				String data = buff.toString();
+				if (data.startsWith("{")) {
+					JSONObject object = new JSONObject(buff.toString());
+					jsonData.parse(object);
+				} else if (data.startsWith("[")) {
+					JSONArray object = new JSONArray(buff.toString());
+					jsonData.parse(object);
+				}
+
+				responseValue = 1;// 解析成功
+			} catch (Exception e) {
+				e.printStackTrace();
+				responseValue = 3;
+			}
+		}
+		return jsonData;
+	}
+
+	/**
+	 * @param data
+	 *            设置公共参数
+	 */
+	private static TreeMap<String, String> setPublicParams(Context context, TreeMap<String, String> data) {
+		if (data == null)
+			data = new TreeMap<String, String>();
+		try {
+			data.put("MemberId", PublicParams.getMemberId());
+			data.put("Platform", PublicParams.getPlatform());
+			data.put("Udid", PublicParams.getUdid(context));
+			data.put("PhoneModel", PublicParams.getPhoneModel());
+			data.put("Imsi", PublicParams.getImsi(context));
+			data.put("Imei", PublicParams.getImei(context));
+			data.put("Source", PublicParams.getSource());
+			data.put("Language", PublicParams.getLanguage());
+			data.put("Operator", PublicParams.getOperator(context));
+			data.put("SmsNumber", PublicParams.getSmsNumber());
+			data.put("ScreenSize", PublicParams.getScreenSize(context));
+			data.put("ApiVersion", PublicParams.getAppVersion());
+			data.put("ClientVersion", PublicParams.getClientVersion());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	/**
+	 * 保存文件到SD�?
+	 */
+	public static void saveJsonToSDCard(String data) {
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/supu/";
+			File file = new File(sdPath);
+//			System.out.println("sdPath:" + sdPath);
+			if (!file.exists())
+				file.mkdirs();
+			String fileName = "json" + Math.random() + ".json";
+			File jsonFlie = new File(file, fileName);
+			try {
+				jsonFlie.createNewFile();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			try {
+				FileOutputStream outStream = new FileOutputStream(jsonFlie);
+				outStream.write(data.getBytes());
+				outStream.flush();
+				outStream.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	/**
+	 * 获取运营商信�?
+	 */
+	public static String getCarrier(Context context) {
+		TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		String imsi = telephony.getSubscriberId();
+		if (imsi != null && !"".equals(imsi)) {
+			if (imsi.startsWith("46000") || imsi.startsWith("46002")) {
+				return "ChinaMobile";
+			} else if (imsi.startsWith("46001")) {
+				return "ChinaUnicom";
+			} else if (imsi.startsWith("46003")) {
+				return "ChinaTelecom";
+			} else {
+				return "othes";
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * 读取手机串号
+	 */
+	public static String readTelephoneSerialNum(Context con) {
+		TelephonyManager telephonyManager = (TelephonyManager) con.getSystemService(Context.TELEPHONY_SERVICE);
+		return telephonyManager.getDeviceId();
+	}
+
+	/**
+	 * MD5加密字符
+	 */
+	public static String md5(String source) {
+		/*
+		 * if (true) { // true表示在测试阶�?return source; } else {
+		 */
+		try {
+			MessageDigest digest = MessageDigest.getInstance("md5");
+			digest.update(source.getBytes());
+			byte[] mess = digest.digest();
+			return toHexString(mess);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+
+		return source;
+		// }
+
+	}
+
+	public static String toHexString(byte[] b) { // byte to String
+		StringBuilder sb = new StringBuilder(b.length * 2);
+		for (int i = 0; i < b.length; i++) {
+			sb.append(HEX_DIGITS[(b[i] & 0xf0) >>> 4]);
+			sb.append(HEX_DIGITS[b[i] & 0x0f]);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 获取路径中的文件
+	 */
+	public static String getFileNameFromURL(String url) {
+		String fileName = url.substring(url.lastIndexOf("/") + 1);
+		return fileName;
+	}
+
+	/**
+	 * 根据URL得到图片
+	 */
+	public static Bitmap getBitmapFromUrl(String urlStr) {
+		try {
+			URL url = new URL(urlStr);
+			URLConnection connection = url.openConnection();
+			connection.connect();
+			InputStream inputStream = connection.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(inputStream);
+			Bitmap bitmap = BitmapFactory.decodeStream(bis);
+			bis.close();
+			inputStream.close();
+			return bitmap;
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 保存文件到指定路径，后缀名修改为.dat
+	 */
+	public static void saveImageToSDAndChangePostfix(Bitmap bitmap, String path, String fileName) {
+		File dir = new File(path);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		String name = fileName.substring(0, fileName.lastIndexOf("."));
+		File imageFile = new File(path + name + ".dat");
+		try {
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(imageFile));
+			if (bitmap != null) {
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+				bos.flush();
+				bos.close();
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 保存文件到指定路径，后缀名不修改
+	 */
+	public static void saveImageToSD(Bitmap bitmap, String path, String fileName) {
+		File dir = new File(path);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		try {
+			File imageFile = new File(URLDecoder.decode((path + fileName), "UTF-8"));
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(imageFile));
+			if (bitmap != null) {
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+				bos.flush();
+				bos.close();
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 获取路径中的文件
+	 */
+	public static String getFileName(String url) {
+		String fileName = url.substring(url.lastIndexOf("/") + 1);
+		return fileName;
+	}
+
+	/**
+	 * 从asset中得到source id
+	 */
+	public static String getSourceIdFromAsset(Context context) {
+		AssetManager assetManager = context.getAssets();
+		InputStream inputStream = null;
+		try {
+			inputStream = assetManager.open("sourid.txt");
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			byte buf[] = new byte[1024];
+			int len = 0;
+			while ((len = inputStream.read(buf)) != -1) {
+				baos.write(buf, 0, len);
+			}
+			baos.flush();
+			baos.close();
+			inputStream.close();
+			return baos.toString();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	/**
+	 * 判断网络是否可用̬
+	 */
+	public static boolean isAccessNetwork(Context context) {
+		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (connectivity.getActiveNetworkInfo() != null && connectivity.getActiveNetworkInfo().isAvailable()) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 获取网络信息
+	 */
+	public static String getAccessNetworkType(Context context) {
+		int type = 0;
+		ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = connManager.getActiveNetworkInfo();
+		if (info == null) {
+			return null;
+		}
+		type = info.getType();
+		if (type == ConnectivityManager.TYPE_WIFI) {
+			return "wifi";
+		} else if (type == ConnectivityManager.TYPE_MOBILE) {
+			return "3G/GPRS";
+		}
+		return null;
+	}
+
+	/**
+	 * 获取SD卡剩余空间，无卡则返�?1
+	 */
+	public static long getSDSize() {
+		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+			String path = Environment.getExternalStorageDirectory().getPath();
+			StatFs statFs = new StatFs(path);
+			long l = statFs.getBlockSize();
+			return statFs.getAvailableBlocks() * l;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * 获取当前时间
+	 */
+	public static String getNowTime() {
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+		return format.format(Calendar.getInstance().getTime());
+	}
+
+	/**
+	 * 删除指定目录下所有文�?
+	 * 
+	 * @param filePath
+	 */
+	public static void deleteAllFile(final String filePath) {
+		Thread t = new Thread(new Runnable() {
+
+			public void run() {
+				// TODO Auto-generated method stub
+				File display = new File(filePath);
+				if (!display.exists()) {
+					return;
+				}
+				File[] items = display.listFiles();
+				int i = display.listFiles().length;
+				for (int j = 0; j < i; j++) {
+					if (items[j].isFile()) {
+						items[j].delete();// 删除文件
+					}
+				}
+			}
+		});
+		t.start();
+	}
+
+	//
+	/**
+	 * 清空指定路径下的的所有文�?
+	 * 
+	 * @param fileName
+	 */
+	public static void deleteAllFiles(String fileName) {
+		File file = new File(fileName);
+		if (!file.exists()) {
+			return;
+		}
+
+		if (file.isDirectory()) {
+			File[] files = file.listFiles();
+			int len = files.length;
+			for (int i = 0; i < len; i++) {
+				deleteAllFiles(files[i].getPath());
+			}
+		} else {
+			file.delete();
+		}
+
+	}
+
+	/**
+	 * 网络链接错误对话�?
+	 */
+	public static void netError(Context con) {
+		AlertDialog.Builder adb = new AlertDialog.Builder(con);
+		adb.setTitle("温馨提示");
+		adb.setMessage("没有网络");
+		adb.setPositiveButton("确定", null);
+		adb.show();
+	}
+
+	public static String getSign(Context context, Map<String, String> paramers) {
+
+		String[] strs = new String[paramers.keySet().size()];
+		int index = 0;
+		for (String string : paramers.keySet()) {
+			strs[index] = string;
+			index++;
+		}
+		StringBuffer sb = new StringBuffer();
+		String temp = null;
+		for (int i = 0; i < strs.length; i++) {
+			for (int j = i + 1; j < paramers.keySet().size(); j++) {
+				if (strs[i].compareTo(strs[j]) > 0) {
+					temp = strs[i];
+					strs[i] = strs[j];
+					strs[j] = temp;
+				}
+			}
+			if (paramers.get(strs[i]) != null) {
+				sb.append(paramers.get(strs[i]).toString());
+			}
+			// Log.e("sb", strs[i] + ": " + paramers.get(strs[i]));
+
+		}
+		String signString = md5(sb.toString() + Constant.TOKEN).trim();
+		return signString;
+	}
+}

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            <RelativeLayout
+                style="@style/layout_bg_single"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                >
+                 <TextView
+                    android:id="@+id/first_star"
+                    android:text="* "
+                    android:gravity="center_vertical"
+                    android:textColor="#FF0000"
+                    android:textSize="14dip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    />
+                 <TextView
+                    android:gravity="center_vertical"
+                    android:text="收件人："
+                     android:textSize="14dip"
+                    android:textColor="#000000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_toRightOf="@+id/first_star"
+                    android:id="@+id/first_star_s"
+                    />
+                 <EditText
+                     android:id="@+id/newConsignee"
+                     android:layout_width="200dip"
+                     android:layout_height="fill_parent"
+                     android:background="@null"
+                     android:layout_toRightOf="@+id/first_star_s"
+                     android:hint="请填写收件人"
+                     android:singleLine="true"
+                     android:textSize="14dip"
+                     android:maxLength ="8"
+                     />
+                 
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/ButtonRelativeLayout"
+                style="@style/layout_bg_single"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                >
+                 <TextView
+                    android:id="@+id/second_star"
+                    android:text="* "
+                    android:textSize="14dip"
+                    android:gravity="center_vertical"
+                    android:textColor="#FF0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    />
+                 <TextView
+                    android:gravity="center"
+                    android:text="所在区域："
+                    android:textSize="14dip"
+                    android:textColor="#000000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_toRightOf="@+id/second_star"
+                    android:id="@+id/second_star_s"
+                    />
+                 <TextView
+                     android:id="@+id/newAddress"
+                     android:layout_width="200dip"
+                     android:layout_height="fill_parent"
+                     android:textSize="14dip"
+                     android:background="@null"
+                     android:layout_toRightOf="@+id/second_star_s"
+                     android:singleLine="true"
+                     android:hint="请选择地址"
+                     />
+            </RelativeLayout>
+            <RelativeLayout
+                style="@style/layout_bg_single"
+                android:layout_height="100dip"
+                android:layout_width="fill_parent"
+                android:gravity="top"
+                >
+                
+                <EditText
+		        android:id="@+id/newAddressInfo" 
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:paddingLeft="20dip"
+		        android:paddingTop="15dip"
+		        android:background="@null"
+		        android:maxEms="100"
+		        android:maxLength="100"
+		        android:maxLines="6"
+		        android:gravity="left|top"
+		        android:textColor="#333333"
+		         android:textSize="14dip"
+		        android:hint="请填写详细地址（100个字符）"
+		       />
+            </RelativeLayout>
+            <RelativeLayout
+                style="@style/layout_bg_single"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                >
+                  <TextView
+                    android:id="@+id/third_star"
+                    android:text="   "
+                     android:textSize="14dip"
+                    android:gravity="center_vertical"
+                    android:textColor="#FF0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    />
+                 <TextView
+                    android:gravity="center_vertical"
+                    android:text="邮编："
+                     android:textSize="14dip"
+                    android:textColor="#000000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_toRightOf="@+id/third_star"
+                    android:id="@+id/third_star_s"
+                    />
+                 <EditText
+                     android:id="@+id/newZipCode"
+                     android:layout_width="200dip"
+                     android:layout_height="fill_parent"
+                     android:textSize="14dip"
+                     android:background="@null"
+                     android:layout_toRightOf="@+id/third_star_s"
+                     android:singleLine="true"
+                     android:maxLength ="11"
+                     android:numeric="integer"
+                     android:hint="请填写邮编"
+                     />
+                
+            </RelativeLayout>
+            <RelativeLayout
+                style="@style/layout_bg_single"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                >
+                
+                 <TextView
+                    android:gravity="center_vertical"
+                    android:text="   手机号："
+                     android:textSize="14dip"
+                    android:textColor="#000000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/forth_star_s"
+                    />
+                 <EditText
+                     android:id="@+id/newMobile"
+                     android:layout_width="200dip"
+                     android:layout_height="fill_parent"
+                     android:textSize="14dip"
+                     android:background="@null"
+                     android:layout_toRightOf="@+id/forth_star_s"
+                     android:hint="请填写手机号"
+                     android:maxLength ="11"
+                     android:singleLine="true"
+                     android:numeric="integer"
+                     />
+            </RelativeLayout>
+            <RelativeLayout
+                style="@style/layout_bg_single"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                >
+                <TextView
+                    android:gravity="center_vertical"
+                    android:text="    固话号："
+                     android:textSize="14dip"
+                    android:textColor="#000000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/fifth_star_s"
+                    />
+                 <EditText
+                     android:id="@+id/newTel"
+                     android:layout_width="200dip"
+                     android:layout_height="fill_parent"
+                     android:textSize="14dip"
+                     android:background="@null"
+                     android:layout_toRightOf="@+id/fifth_star_s"
+                     android:hint="格式:012387654321"
+                     android:singleLine="true"
+                     android:digits="0123456789"
+                     android:maxLength="12"
+                     />
+            </RelativeLayout>
+
+              <RelativeLayout
+                  android:paddingTop="20dip"
+                  android:paddingBottom="30dip"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content" 
+                  android:gravity="center_horizontal"
+                  >
+	
+                  <Button
+                      android:id="@+id/setAddressButton"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="设置默认收货地址"
+                      android:textSize="12dip"
+                      android:textColor="#ffffff"
+                      android:background="@drawable/consignee_red" />
+                  <TextView
+                      android:id="@+id/emptyTextView"
+                      android:layout_width="20dip"
+                      android:layout_height="wrap_content"
+                      android:layout_toRightOf="@+id/setAddressButton"
+                      />
+
+                  <Button
+                      android:id="@+id/deleteAddressButton"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="删除"
+                      android:layout_toRightOf="@+id/emptyTextView"
+                      android:textSize="12dip"
+                      android:textColor="#ffffff"
+                      android:background="@drawable/consignee_red"
+                     
+                       />
+              </RelativeLayout>
+            
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout
+        android:id="@+id/add_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <cc.android.supu.wheelview.WheelView
+            android:id="@+id/add_wheel_province"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+
+        <cc.android.supu.wheelview.WheelView
+            android:id="@+id/add_wheel_city"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+
+        <cc.android.supu.wheelview.WheelView
+            android:id="@+id/add_wheel_area"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</RelativeLayout>

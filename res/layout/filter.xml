@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/categorylabel"
+            style="@style/filter_subtitle"
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:text="分类:" />
+
+        <cc.android.supu.view.SupuGridView
+            android:id="@+id/category_gridview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:horizontalSpacing="5dp"
+            android:numColumns="4"
+            android:paddingBottom="5dip"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp" />
+
+        <TextView
+            android:id="@+id/pricelabel"
+            style="@style/filter_subtitle"
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:text="价格:" />
+
+        <cc.android.supu.view.SupuGridView
+            android:id="@+id/price_gridview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:horizontalSpacing="1dp"
+            android:numColumns="4"
+            android:paddingBottom="5dip"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp" />
+
+        <TextView
+            android:id="@+id/brandlabel"
+            style="@style/filter_subtitle"
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:text="品牌:" />
+
+        <cc.android.supu.view.SupuGridView
+            android:id="@+id/brand_gridview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:horizontalSpacing="5dp"
+            android:numColumns="4"
+            android:paddingBottom="5dip"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp" />
+    </LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,135 @@
+package cc.android.supu.tools;
+
+/**
+ * @author sss 地址类
+ */
+public interface ConstantUrl {
+	/** 获取焦点图(首页顶部Gallery上的图片) */
+	String GETPICLIST = "http://www.supuy.com/PhoneApi/GetPicList";
+	/** 获取首页促销商品(首页Gallery下面的商品图片) */
+	String GETINDEXTOPGOODS = "http://www.supuy.com/PhoneApi/GetIndexTopGoods";
+	/** 获取活动列表 */
+	String GETACTIVITYLIST = "http://www.supuy.com/api/phone/GetActivity";
+	/** 获取商品列表(搜索、筛选) */
+	String GETPRODUCTLIST = "http://www.supuy.com/api/phone/GetGoodsList";
+	/** 获取孕育宝典数据 */
+	String GETGREEDLIST = "http://www.supuy.com/api/phone/GetArticleCategoryList";
+	/** 获取孕育宝典老二级列表 */
+	String GETARTICLELIST = "http://www.supuy.com/api/phone/GetArticleList";
+	/** 获取孕育宝典列表 */
+	String GETARTICLEINFO = "http://www.supuy.com/api/phone/GetArticleInfo";
+	
+	/** 获取分类数据 */
+	String GETCATEGORYLIST = "http://www.supuy.com/api/phone/GetCategoryList";
+	/** 获取品牌数据 */
+	String GETBRANDLIST = "http://www.supuy.com/api/phone/GetBrandList";
+	/** 获取筛选数据 */
+	String GETFILTERLIST = "http://www.supuy.com/api/phone/GetScreeningInfo";
+	/** 获取优惠券列表 */
+	String GETTICKETLIST = "http://www.supuy.com/PhoneApi/GetTicketList";
+	/** 获得优惠券信息 */
+	String GETTICKET = "http://www.supuy.com/PhoneApi/GetTicket";
+	/** 绑定优惠券*/
+	String BINDTICKET = "http://www.supuy.com/api/phone/BindTicket";
+	/** 查看优惠券是否可用*/
+	String GETTICKETINFO = "http://www.supuy.com/api/phone/GetTicketInfo";
+	/** 获得购物车 */
+	String GETSHOPPINGCART = "http://www.supuy.com/PhoneApi/GetShoppingCart";
+	/** 添加或修改购物车 */
+	String GETMODIFYSHOPPINGCART = "http://www.supuy.com/PhoneApi/ModifyShoppingCart";
+	/** 登录请求的URL */
+	String LOGINURL = "http://www.supuy.com/api/phone/Login";
+	/** 注册请求的URL */
+	String REGISTURL = "http://www.supuy.com/api/phone/Register";
+	/** 获取会员中心促销商品 */
+	String GETMEMBERTOPGOODS = "http://www.supuy.com/api/phone/GetMemberTopGoods";
+	/** 获得收货地址列表 */
+	String GETCONSIGNEElIST = "http://www.supuy.com/api/phone/GetConsigneeList";
+	/** 添加修改收货地址 */
+	String ADDORMOIDFYCONSIGNEE = "http://www.supuy.com/api/phone/AddOrMoidfyConsignee";
+	/** 删除收货地址 */
+	String DELETECONSIGNEE = "http://www.supuy.com/api/phone/DeleteConsignee";
+	/** 获得全部省市县信息 */
+	String GETALLDISTRICT = "http://www.supuy.com/api/phone/GetAllDistrict";
+	/** 获得用户站内信 */
+	String GETUSERMESSAGE = "http://www.supuy.com/api/phone/GetUserMessage";
+	/** 更新消息状态为已读 */
+	String USERMESSAGETOREAD = "http://www.supuy.com/api/phone/UserMessageToRead";
+	/** 商品详情 */
+	String GETGOODFSDETAILS = "http://www.supuy.com/api/phone/GetGoodsDetails";
+	/** 添加到收藏夹 */
+	String ADDFAVORITES = "http://www.supuy.com/api/phone/AddFavorites";
+	/** 用户反馈 */
+	String FEEDBACK = "http://www.supuy.com/api/phone/PostFeedBack";
+	/** 获取推送消息 */
+	String GETPUSHMESSAGE = "http://www.supuy.com/api/phone/GetPushMessage";
+	
+	/** 获得商品描述 */
+	String GETGOODESCRIPTION = "http://www.supuy.com/api/phone/GetGoodsDescription";
+	/** 获得商品咨询列表 */
+	String GETGOODSCONSULT = "http://www.supuy.com/api/phone/GetGoodsConsult";
+	/** 获得商品评论列表 */
+	String GETGOODSCOMMENT = "http://www.supuy.com/api/phone/GetGoodsComment";
+	/** 获得可享受的优惠活动*/
+	String GETGOODSACTIVITIES = "http://www.supuy.com/api/phone/GetGoodsActivities";
+	/** 获得收藏列表 */
+	String GETFAVORITES = "http://www.supuy.com/api/phone/GetFavorites";
+	/** 删除收藏 */
+	String REMOVEFAVORITES = "http://www.supuy.com/api/phone/RemoveFavorites";
+	/** 获得订单列表 */
+	String GETORDERLIST = "http://www.supuy.com/api/phone/GetOrderList";
+	/**获得订单详细信息 */
+	String GETORDER = "http://www.supuy.com/api/phone/GetOrder";
+	/** 获得运费*/
+	String GETSHIPPINGFEE = "http://www.supuy.com/api/phone/GetShippingFee";
+	/** 获得默认收货地址*/
+	String GETDEFAULTCONSIGNEE = "http://www.supuy.com/api/phone/GetDefaultConsignee";
+	/** 根据地区和支付方式获得支付方式及送货方式*/
+	String GETPAYMENTSHIPPING = "http://www.supuy.com/api/phone/GetPaymentShipping";
+	/** 提交订单*/
+	String SUBMITORDER = "http://www.supuy.com/api/phone/SubmitOrder";
+	/** 获得订单物流信息*/
+	String GETORDERPROCESSINFOMATION = "http://www.supuy.com/api/phone/GetOrderProcessInformation";
+	/** 获取更新*/
+	String UPDATE = "http://www.supuy.com/api/phone/Update";
+	/** 获取用户信息*/
+	String GETMEMBERINFO = "http://www.supuy.com/api/phone/GetMemberInfo";
+	/** 获得订单提交成功提示信息URL*/
+	String GETORDERSUCCESS= "http://www.supuy.com/api/phone/GetOrderSuccess";
+	/** 获取银联订单信息*/
+	String GETUPPAYDATA = "http://www.supuy.com/api/phone/GetUPPayData";
+	/** 获取支付宝支付数据*/
+	String GETALIPAYDATA = "http://www.supuy.com/api/phone/GetAliPayData";
+	/** 获取引导页*/
+	String GETBANNER = "http://www.supuy.com/api/phone/GetBanner";
+	// 腾讯微博
+	String TXWEIBO_APP_KEY = "801272636";
+	String TXWEIBO_SECRET_KEY = "2613df1cb4b9326a6480c895468f4661";
+	/** 获取关于我们信息*/
+	String GETABOUTUS = "http://www.supuy.com/api/phone/GetAboutUs";
+
+	// 新浪微博
+	String SINAWEIBO_APP_KEY = "772853269";//"3355451277";
+	String SINAWEIBO_SECRET_KEY = "b9deafbff6f359da4495faec3ee70bab";//"981169c67728bdfbfbc63950c383f60b";
+	String SINAREDIRECT_URL = "http://www.supuy.com/";// "https://api.weibo.com/oauth2/default.html";//"http://www.sina.com";//https://api.weibo.com/oauth2/default.html;
+
+//	// 搜狐微博
+//	String SOHUWEIBO_APP_KEY = "NMfywJkfVF0yPYAmbA8D";
+//	String SOHUWEIBO_SECRET_KEY = "aKKkZQ00q1TVM#mC$MtmDVsJkbd#E5tYcWHBb*hn";
+//
+//	String WYWEIBO_APP_KEY = "SFpGhs8WI61DPSly";
+//	String WYWEIBO_SECRET_KEY = "ArqWUKXMglvgc5WZ23XECmoPl8YR04vq";
+
+//	// 开心网
+//	String KAIXIN_APP_KEY = "842605380987347bb8764440079df078";
+//	String KAIXIN_SECRET_KEY = "611020569a506f79566f057f8dd22d12";
+
+	// 人人网
+	String RENREN_APP_KEY = "8f5255e0c87a42e29ff6adf77a0823fa";
+	String RENREN_SECRET_KEY = "8cc703c1ed9d434d9643af8dea2d7252";
+	String RENREN_APP_ID = "105381";
+
+	// publisherUuid
+	String PUBLISHER_UUID = "123";
+
+}

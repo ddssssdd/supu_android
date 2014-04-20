@@ -1,0 +1,306 @@
+package cc.android.supu;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import cc.android.supu.adapter.WelcomeGalleryAdapter;
+import cc.android.supu.bean.BannerBean;
+import cc.android.supu.bean.CityBean;
+import cc.android.supu.bean.MemberBean;
+import cc.android.supu.handler.GetAllDistrictHandler;
+import cc.android.supu.handler.GetBannerHandler;
+import cc.android.supu.service.CityDataService;
+import cc.android.supu.service.PushMsg;
+import cc.android.supu.tools.AsyncImageLoader;
+import cc.android.supu.tools.ConstantUrl;
+import cc.android.supu.tools.PublicParams;
+import cc.android.supu.tools.Tools;
+import cc.android.supu.tools.UserInfoTools;
+import cc.android.supu.view.FllingGallery;
+
+public class WelcomeActivity extends Activity {
+	/** 成功 */
+	private final static int SUCCESS = 1;
+	/** 成功 */
+	private final static int ERROR = 2;
+	/** 失败 */
+	private final static int FAIL = 0;
+	/** 是否推送消息 */
+	private boolean isMessage;
+	/** 是否推送消息 */
+	private boolean isImage;
+	/** 省市区列表 */
+	public List<CityBean> cityBeanList;
+	/** 获得全部的省市 */
+	private GetAllDistrictHandler getAllDistrictHandler;
+
+	private ArrayList<String> cityState;
+
+	private String version2;
+	/** 获取引导页信息解析器 */
+	private GetBannerHandler bannerHandler;
+	private FllingGallery gallery;
+	private LinearLayout pointLayout;
+	private WelcomeGalleryAdapter adapter;
+	/** 获取引导页bannerList */
+	private ArrayList<BannerBean> bannerList;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.welcome);
+		cityState = new ArrayList<String>();
+		MemberBean memberBean = UserInfoTools.getUserBean(this);
+		if (memberBean != null) {
+			String memberId = memberBean.getMemberId();
+			if (!"".equals(memberId.trim())) {
+				PublicParams.setMEMBERID(memberId);
+			}
+		}
+		// SQLiteHelper helper = new SQLiteHelper(this);
+		// SQLiteHelper.createTable();
+		// SupuApplication.setMcontext(this);
+		// if (helper != null && SQLiteHelper.db.isOpen()) {
+		// helper.close();
+		// }
+
+		isMessage = UserInfoTools.getMessage(this);
+		System.out.println("isMessage" + isMessage);
+		isImage = UserInfoTools.getImage(this);
+		if (isImage) {
+			AsyncImageLoader.isShow = true;
+		} else {
+			AsyncImageLoader.isShow = false;
+		}
+		if (isMessage) {
+			// 开启消息
+//			startService(new Intent(WelcomeActivity.this, Messageservice.class));
+			PushMsg pushMsg = PushMsg.getInstance();
+			pushMsg.openMsgPush(WelcomeActivity.this);
+		}
+		startService(new Intent(WelcomeActivity.this, CityDataService.class));
+		intPage();
+	} 
+	
+	
+	
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+
+//		if(keyCode == KeyEvent.KEYCODE_HOME )
+//			return false;
+//		if (keyCode == KeyEvent.KEYCODE_BACK && event != null && event.getRepeatCount() == 0) {
+			return false;
+//		}else
+//			return super.onKeyDown(keyCode, event);
+	}
+
+
+
+
+	/**
+	 * 跳转首页
+	 */
+	private void Start() {
+		startActivity(new Intent(this, IndexActivity.class));
+		this.finish();
+	}
+
+	private Handler handler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case SUCCESS:
+				bannerList = bannerHandler.list;
+				if (bannerList != null && bannerList.size() > 0) {
+					adapter = new WelcomeGalleryAdapter(WelcomeActivity.this,
+							bannerList);
+					gallery.setAdapter(adapter);
+					gallery.setSelection(0);
+					creatPoint(0);
+					saveBannerInfo(WelcomeActivity.this, bannerList, false);
+				} else {
+					Start();
+				}
+				break;
+			case FAIL:
+			case ERROR:
+				bannerList = getBannerList(WelcomeActivity.this);
+				if (bannerList.size() == 0) {
+					Start();
+				} else {
+					adapter = new WelcomeGalleryAdapter(WelcomeActivity.this,
+							bannerList);
+					gallery.setAdapter(adapter);
+					gallery.setSelection(0);
+					creatPoint(0);
+				}
+
+				break;
+			case 5:
+				Start();
+				break;
+			}
+		};
+	};
+
+	private void intPage() {
+		gallery = (FllingGallery) findViewById(R.id.gallery);
+		gallery.setOnItemSelectedListener(mOnItemSelectedListener);
+		pointLayout = (LinearLayout) findViewById(R.id.pointLayout);
+		// bannerList = new ArrayList<BannerBean>();
+		// adapter = new WelcomeGalleryAdapter(this, bannerList);
+		if (!Tools.isAccessNetwork(this)) {
+			Tools.netError(this);
+			return;
+		} else {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					bannerHandler = new GetBannerHandler();
+					Tools.requestToParse(WelcomeActivity.this,
+							ConstantUrl.GETBANNER, "GetBanner", null,
+							bannerHandler, false);
+					if (Tools.responseValue == 1) {
+						if (bannerHandler.result_code == 0) {
+							handler.sendEmptyMessage(SUCCESS);
+						} else {
+							handler.sendEmptyMessage(FAIL);
+						}
+					} else {
+						handler.sendEmptyMessage(ERROR);
+					}
+				}
+			}).start();
+		}
+	}
+
+	/**
+	 * 保存banner相关信息
+	 * 
+	 * @param context
+	 * @param list
+	 *            banner列表
+	 * @param isfirst
+	 *            是否第一次
+	 */
+	private void saveBannerInfo(Context context, ArrayList<BannerBean> list,
+			boolean isfirst) {
+		SharedPreferences sp = context.getSharedPreferences("banner_info",
+				Context.MODE_PRIVATE);
+		Editor editor = sp.edit();
+		editor.putBoolean("isfirst", isfirst);
+		editor.putInt("count", list.size());
+		if (list != null) {
+			for (int i = 0; i < list.size(); i++) {
+				StringBuffer buff = new StringBuffer();
+				buff.append(list.get(i).picUrl).append(";")
+						.append(list.get(i).beginTime).append(";")
+						.append(list.get(i).endTime);
+				editor.putString("i", buff.toString());
+			}
+		}
+		System.out.println("-----------------");
+		editor.commit();
+	}
+
+	/**
+	 * 获取banner的信息
+	 * 
+	 * @param context
+	 * @return
+	 */
+	private ArrayList<BannerBean> getBannerList(Context context) {
+		SharedPreferences sp = context.getSharedPreferences("banner_info",
+				Context.MODE_PRIVATE);
+
+		int count = sp.getInt("count", 0);
+		ArrayList<BannerBean> list = new ArrayList<BannerBean>();
+		for (int i = 0; i < count; i++) {
+			String bannerStr = sp.getString(i + "", "");
+			String[] strArr = bannerStr.split(";");
+			if (strArr.length == 3) {
+				BannerBean banner = new BannerBean();
+				banner.picUrl = strArr[0];
+				banner.beginTime = strArr[1];
+				banner.endTime = strArr[2];
+
+				list.add(banner);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 获取是否是第一次进入
+	 * 
+	 * @param context
+	 * @return
+	 */
+	private boolean isFirst(Context context) {
+		SharedPreferences sp = context.getSharedPreferences("banner_info",
+				Context.MODE_PRIVATE);
+		return sp.getBoolean("isfirst", true);
+	}
+
+	/**
+	 * 画点
+	 */
+	private void creatPoint(int position) {
+		if (bannerList != null && bannerList.size() > 1) {
+			pointLayout.removeAllViews();
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(12, 12);
+			for (int i = 0; i < bannerList.size(); i++) {
+				ImageView point = new ImageView(this);
+				point.setBackgroundResource(i == position ? R.drawable.point_red
+						: R.drawable.point_gray);
+				if (i > 0 && i < bannerList.size()) {
+					lp.leftMargin = 10;
+				}
+				pointLayout.addView(point, i, lp);
+			}
+
+		}
+	}
+
+	private OnItemSelectedListener mOnItemSelectedListener = new OnItemSelectedListener() {
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view,
+				int position, long id) {
+			// TODO Auto-generated method stub
+			creatPoint(position);
+			if (position == bannerList.size() - 1) {
+				Message msg = handler.obtainMessage();
+				msg.what = 5;
+				handler.sendMessageDelayed(msg, 3000);
+			}
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> parent) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
+}
