@@ -27,6 +27,9 @@ public interface ConstantUrl {
 	String GETFILTERLIST = "http://www.supuy.com/api/phone/GetScreeningInfo";
 	/** 获取优惠券列表 */
 	String GETTICKETLIST = "http://www.supuy.com/PhoneApi/GetTicketList";
+	/** 获取可用发票列表 */
+	String GETINVOICELIST = "http://www.supuy.com/api/phone/GetInvoiceInfos";
+	
 	/** 获得优惠券信息 */
 	String GETTICKET = "http://www.supuy.com/PhoneApi/GetTicket";
 	/** 绑定优惠券*/

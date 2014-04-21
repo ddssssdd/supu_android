@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -452,6 +453,12 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
 	protected void onPause() {
 	    super.onPause();
 	    MobclickAgent.onPause(this);
+	}
+	protected void hideKeyBoard(){
+		if (this.getCurrentFocus() != null) {// 隐藏软键盘
+			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this
+					.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
 	}
 
 }

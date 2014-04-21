@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="20dip"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:paddingTop="15dip" >
+
+    <ListView
+        android:id="@+id/selectinvoice_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@anim/shape_ticketinfo_layout_bg"
+        android:cacheColorHint="#00000000"
+        android:divider="#C7C8CA"
+        android:dividerHeight="0.1dip"
+        android:listSelector="#00000000"
+        android:paddingBottom="0dip"
+        android:paddingLeft="0dip"
+        android:paddingRight="0dip"
+        android:paddingTop="0dip" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发票抬头：" />
+
+        <EditText
+            android:id="@+id/edt_invoice_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:hint="个人" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_high_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/red" />
+    <TextView
+        android:id="@+id/txt_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/gray" />
+
+</LinearLayout>

@@ -99,6 +99,8 @@ public class SettleAccountActivity extends BaseActivity {
 	private EditText cashEt;
 	/** 显示优惠券名 */
 	private TextView ticketEt;
+	//显示发票信息
+	private TextView txtInvoice;
 	/** 显示留言内容 */
 	private TextView leaveMsgTv;
 	/** 显示支付方式加载进度条 */
@@ -188,7 +190,8 @@ public class SettleAccountActivity extends BaseActivity {
 	/** 优惠券删除按钮 */
 	private ImageView discountImage;
 	private boolean ifDiscount = false;// 是否先把优惠券，有为True,没有为False;
-
+	private String invoiceID;
+	private String invoiceHead;
 	@Override
 	protected String setTitle() {
 		// TODO Auto-generated method stub
@@ -319,8 +322,9 @@ public class SettleAccountActivity extends BaseActivity {
 			break;
 		// 发票信息
 		case R.id.settleaccount_invoiceLayout:
-			intent = new Intent(this, TicketListActivity.class);
-			intent.putExtra("shopCart", "shopCart");
+			intent = new Intent(this, InvoiceListActivity.class);
+			intent.putExtra("invoiceID", invoiceID);
+			intent.putExtra("head",invoiceHead);
 			startActivityForResult(intent, 0);
 			break;
 		// 优惠券
@@ -389,6 +393,8 @@ public class SettleAccountActivity extends BaseActivity {
 		cashEt = (EditText) findViewById(R.id.settleaccount_cashEt);
 		cashEt.addTextChangedListener(watcher);
 		ticketEt = (TextView) findViewById(R.id.settleaccount_ticketName);
+		txtInvoice =(TextView) findViewById(R.id.settleaccount_invoiceName);
+		
 		leaveMsgTv = (TextView) findViewById(R.id.settleaccount_leavemsg);
 
 		paymentPBar = (ProgressBar) findViewById(R.id.settleaccount_Paymnent_progressBar);
@@ -528,7 +534,8 @@ public class SettleAccountActivity extends BaseActivity {
 			params.put("AllCash", allCash + "");
 			params.put("TicketNo", ticketNo);
 			params.put("Remark", remark);
-
+			params.put("invoiceID", invoiceID);
+			params.put("invoiceTo", invoiceHead);
 			submitOrderhandler = new SubmitOrderhandler();
 			Tools.requestToParse(SettleAccountActivity.this,
 					ConstantUrl.SUBMITORDER, "SubmitOrder", params,
@@ -940,7 +947,12 @@ public class SettleAccountActivity extends BaseActivity {
 				} else {
 					ifDiscount = false;
 				}
-			} else if (resultCode == 555) {// 地址信息
+			} else if (resultCode == 60) {// 发票信息
+				invoiceID = data.getStringExtra("invoiceID");
+				String invoiceName = data.getStringExtra("invoiceName");
+				invoiceHead = data.getStringExtra("head");
+				txtInvoice.setText(String.format("%s:%s", invoiceName,invoiceHead));
+			}else if (resultCode == 555) {// 地址信息
 				consigneeBean = (ConsigneeBean) data
 						.getSerializableExtra("ConsigneeBean");
 				if (consigneeBean != null) {

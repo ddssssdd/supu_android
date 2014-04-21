@@ -168,7 +168,7 @@ public final class PublicParams {
 	 * @return 接口版本号
 	 */
 	public static String getAppVersion() {
-		return "1.1";
+		return "1.2";
 	}
 
 	/**
